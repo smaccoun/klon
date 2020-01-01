@@ -2,8 +2,8 @@ module Klon.CLI.Args where
 
 import Options.Applicative
 import GHC.Generics
+import Klon.Command.Connect (ConnectionType(..))
 
-data ConnectionType = SSH | Tunnel
 data Env = Production | Staging | Dev
 
 data Command = Command ConnectionType Env
