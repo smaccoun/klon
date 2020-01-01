@@ -20,11 +20,40 @@ extra-source-files:
 description:         Please see the README on GitHub at <https://github.com/smaccoun/klon#readme>
 
 dependencies:
+- Cabal
 - base >= 4.7 && < 5
 - optparse-applicative
+- text
+
+default-extensions:
+  - ConstraintKinds
+  - DataKinds
+  - DeriveGeneric
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - KindSignatures
+  - MultiParamTypeClasses
+  - OverloadedStrings
+  - PolyKinds
+  - QuasiQuotes
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - NamedFieldPuns
+  - StandaloneDeriving
+  - TemplateHaskell
+  - TypeApplications
+  - TypeFamilies
+  - TypeOperators
+  - UndecidableInstances
+  - DeriveAnyClass
+  - DerivingStrategies
+
 
 library:
-  source-dirs: src
+  source-dirs: lib
 
 executables:
   klon:
