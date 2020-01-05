@@ -3,7 +3,42 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: higgledy-0.3.1.0@sha256:fa3e3cb4e92e76b0fa6ce7212e12f8e479ceb1b276a6e8edf152b8c5b6834888,2031
+    pantry-tree:
+      size: 780
+      sha256: be1e99777f5d16f39fb584131ad8a49888d681eb3cc308bf6877d9f123dcbbe0
+  original:
+    hackage: higgledy-0.3.1.0@sha256:fa3e3cb4e92e76b0fa6ce7212e12f8e479ceb1b276a6e8edf152b8c5b6834888,2031
+- completed:
+    hackage: amazonka-1.6.1@sha256:d863557379350ed6bbb91187abeb8c349a654f60b140d138710486f58ae7c476,3536
+    pantry-tree:
+      size: 992
+      sha256: 55747f9b56063ea1be73a962e1ce44528b9856e119e2d9f1238397b3112b6e70
+  original:
+    hackage: amazonka-1.6.1@sha256:d863557379350ed6bbb91187abeb8c349a654f60b140d138710486f58ae7c476,3536
+- completed:
+    hackage: amazonka-ecs-1.6.1@sha256:8f03589dae4d573a9c0311a8a289a8762ec490ab90ef4d070a7eda7f3489efc5,4247
+    pantry-tree:
+      size: 7920
+      sha256: 71a978e30cde2da14a87732bcefbf4ff0aaec3b463d4bbac84781d07856b0a5b
+  original:
+    hackage: amazonka-ecs-1.6.1@sha256:8f03589dae4d573a9c0311a8a289a8762ec490ab90ef4d070a7eda7f3489efc5,4247
+- completed:
+    hackage: amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
+    pantry-tree:
+      size: 3438
+      sha256: c13e643176308771491ec0e06390e269047bb1b28be4535992842f7426a95eb4
+  original:
+    hackage: amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
+- completed:
+    hackage: amazonka-ec2-1.6.1@sha256:208908e8a30937a3ec640e8b53de2708d805a28c3900dbf447db12a61d9b7a50,16305
+    pantry-tree:
+      size: 67057
+      sha256: e46eaecb67eef0f7bdfa37120e54cc9633c2940cca8be4377eb93eecaa511a96
+  original:
+    hackage: amazonka-ec2-1.6.1@sha256:208908e8a30937a3ec640e8b53de2708d805a28c3900dbf447db12a61d9b7a50,16305
 snapshots:
 - completed:
     size: 524155

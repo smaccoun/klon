@@ -34,8 +34,12 @@ packages:
 # These entries can reference officially published versions as well as
 # forks / in-progress versions pinned to a git hash. For example:
 #
-# extra-deps:
-# - acme-missiles-0.3
+extra-deps:
+- higgledy-0.3.1.0@sha256:fa3e3cb4e92e76b0fa6ce7212e12f8e479ceb1b276a6e8edf152b8c5b6834888,2031
+- amazonka-1.6.1@sha256:d863557379350ed6bbb91187abeb8c349a654f60b140d138710486f58ae7c476,3536
+- amazonka-ecs-1.6.1@sha256:8f03589dae4d573a9c0311a8a289a8762ec490ab90ef4d070a7eda7f3489efc5,4247
+- amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
+- amazonka-ec2-1.6.1@sha256:208908e8a30937a3ec640e8b53de2708d805a28c3900dbf447db12a61d9b7a50,16305
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #

@@ -25,6 +25,12 @@ dependencies:
 - optparse-applicative
 - text
 - shelly
+- higgledy
+- amazonka
+- amazonka-core
+- amazonka-ecs
+- amazonka-ec2
+- microlens
 
 default-extensions:
   - ConstraintKinds

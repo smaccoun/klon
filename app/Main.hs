@@ -3,6 +3,7 @@ module Main where
 import Lib
 import Klon.Command.Connect
 import Klon.Cloud.Resources.Types
+import Klon.Config
 import Shelly
 
 main :: IO ()
