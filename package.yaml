@@ -31,6 +31,9 @@ dependencies:
 - amazonka-ecs
 - amazonka-ec2
 - microlens
+- microlens-th
+- vty
+- brick
 
 default-extensions:
   - ConstraintKinds

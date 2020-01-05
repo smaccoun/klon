@@ -14,14 +14,14 @@ data Command
         _inputAwsProfile :: Maybe Text
       }
 
-opts :: ParserInfo Command
+opts :: ParserInfo (Maybe Command)
 opts = info (fullCmdParser <**> helper) idm
 
-captureArgs :: IO Command
+captureArgs :: IO (Maybe Command)
 captureArgs = execParser opts
 
-fullCmdParser :: Parser Command
-fullCmdParser =
+fullCmdParser :: Parser (Maybe Command)
+fullCmdParser = optional $
   Command
     <$> connectionCmdParser
     <*> envParser
