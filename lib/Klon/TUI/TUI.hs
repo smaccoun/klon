@@ -12,6 +12,9 @@ import           GHC.Generics
 import qualified Graphics.Vty         as V
 import           Lens.Micro.TH
 import Klon.Config (AppEnv(..))
+import Brick.Types (ViewportType(..))
+import Brick.BChan
+import Control.Monad.IO.Class (liftIO)
 
 data Name = StagingEnvSelector | DevEnvSelector deriving (Generic, Show, Eq, Ord)
 
@@ -22,14 +25,14 @@ data EnvConfig =
 
 makeLenses ''EnvConfig
 
-mkForm :: EnvConfig -> Form EnvConfig e Name
+mkForm :: EnvConfig -> Form EnvConfig e ViewPortName
 mkForm =
     let label s w = padBottom (Pad 1) $
                     (vLimit 1 $ hLimit 15 $ str s <+> fill ' ') <+> w
     in newForm [ label "Environment" @@=
                    radioField contextEnv
-                      [ (Staging, StagingEnvSelector, "Staging")
-                      , (Dev, DevEnvSelector, "Dev")
+                      [ (Staging, ConfigViewPort StagingEnvSelector, "Staging")
+                      , (Dev, ConfigViewPort DevEnvSelector, "Dev")
                       ]
                ]
 
@@ -41,29 +44,46 @@ theMap = attrMap V.defAttr
   , (focusedFormInputAttr, V.black `on` V.yellow)
   ]
 
-draw :: Form EnvConfig e Name -> [Widget Name]
-draw f = [C.vCenter $ C.hCenter form <=> C.hCenter help]
+drawConfigVP :: Form EnvConfig CustomEvent ViewPortName -> [Widget ViewPortName]
+drawConfigVP f = [C.hCenter form <=> C.hCenter help]
     where
         form = B.border $ padTop (Pad 1) $ hLimit 50 $ renderForm f
         help = padTop (Pad 1) $ B.borderWithLabel (str "Help") body
         body = str $ "- Select Environment\n" <>
                      "- Enter/Esc quit, mouse interacts with fields"
 
-app :: App (Form EnvConfig e Name) e Name
-app =
-    App { appDraw = draw
+data ViewPortName = ConfigViewPort Name | StatusViewPort deriving (Generic, Show, Eq, Ord)
+
+drawStatusVP :: Form EnvConfig CustomEvent ViewPortName -> [Widget ViewPortName]
+drawStatusVP f = 
+    [ (viewport (ConfigViewPort StagingEnvSelector) Vertical 
+        $ B.border
+        $ vLimit 40 
+        $ vBox 
+        $ drawConfigVP f)
+    <+> 
+      (viewport StatusViewPort Vertical $ B.border $ str "Status")
+    ]
+
+app :: BChan CustomEvent -> App (Form EnvConfig CustomEvent ViewPortName) CustomEvent ViewPortName
+app chan =
+    App { appDraw = drawStatusVP
         , appHandleEvent = \s ev ->
             case ev of
                 VtyEvent (V.EvResize {})     -> continue s
                 VtyEvent (V.EvKey V.KEsc [])   -> halt s
+                AppEvent SelectedItem -> halt s
                 _ -> do
                     ns <- handleFormEvent ev s
+                    liftIO $ writeBChan chan SelectedItem
                     continue ns
 
         , appChooseCursor = focusRingCursor formFocus
         , appStartEvent = return
         , appAttrMap = const theMap
         }
+
+data CustomEvent = SelectedItem
 
 bootTUI :: IO AppEnv
 bootTUI = do
@@ -75,7 +95,8 @@ bootTUI = do
         f = mkForm (EnvConfig Staging)
 
     initialVty <- buildVty
-    f' <- customMain initialVty buildVty Nothing app f
+    eventChan <- Brick.BChan.newBChan 10
+    f' <- customMain initialVty buildVty (Just eventChan) (app eventChan) f
 
     putStrLn "The final form state was:"
     print $ formState f'

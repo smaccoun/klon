@@ -19,8 +19,6 @@ data BaseConfig
       }
   deriving (Generic)
 
-makeLenses ''BaseConfig
-
 data Config
   = Config
       { _sshConfig :: SSHConfig
@@ -41,3 +39,9 @@ defaultSSHConfig = deconstruct SSHConfig
   { _sshPrivateKeyLoc = PrivateKeyLoc "~/.ssh/id_rsa",
     _portForwardLocalPort = PortToConnect 8888
   }
+
+makeLenses ''BaseConfig
+
+makeLenses ''SSHConfig
+
+makeLenses ''Config
