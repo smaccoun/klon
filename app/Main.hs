@@ -6,10 +6,12 @@ import Klon.Cloud.Resources.Types
 import Klon.Cloud.Resources.AWS.ECS
 import Klon.Config
 import Shelly
+import Data.Maybe (fromMaybe)
 
 main :: IO ()
 main = do
-  Command connectType cli awsProf <- captureArgs
+  Command connectType cli mbAwsProf <- captureArgs
+  let awsProf = fromMaybe "default" mbAwsProf
   awsRunner <- mkRunAWS_ awsProf 
   ec2IP <- awsRunner $ getAnEC2InstancePublicIP (mapClusterName cli)
   let server = ServerConnectedToDB ec2IP 

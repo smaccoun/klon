@@ -11,7 +11,7 @@ data Command
   = Command
       { _inputConnType :: ConnectionType,
         _inputAppEnv :: AppEnv,
-        _inputAwsProfile :: Text
+        _inputAwsProfile :: Maybe Text
       }
 
 opts :: ParserInfo Command
@@ -42,6 +42,6 @@ envParser =
         <> command "production" (info (pure Dev) (progDesc "Production AppEnv"))
     )
 
-awsProfileArgParser :: Parser Text
+awsProfileArgParser :: Parser (Maybe Text)
 awsProfileArgParser =
-  strOption (long "aws-profile")
+  optional $ strOption (long "aws-profile")
