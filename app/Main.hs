@@ -13,7 +13,10 @@ main :: IO ()
 main = do
   mbArgs <- captureArgs
   case mbArgs of
-    Nothing -> bootTUI
+    Nothing -> do
+      inputConfig <- bootTUI
+      print $ show inputConfig
+      return ()
     Just (Command connectType cli mbAwsProf) -> do
       let awsProf = fromMaybe "default" mbAwsProf
       awsRunner <- mkRunAWS_ awsProf

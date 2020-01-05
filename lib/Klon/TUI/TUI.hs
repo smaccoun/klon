@@ -11,13 +11,12 @@ import           Data.Monoid          ((<>))
 import           GHC.Generics
 import qualified Graphics.Vty         as V
 import           Lens.Micro.TH
-
-data TUIAppEnv = StagingEnv | DevEnv deriving (Generic, Read, Show, Eq)
+import Klon.Config (AppEnv(..))
 
 data Name = StagingEnvSelector | DevEnvSelector deriving (Generic, Show, Eq, Ord)
 
 data EnvConfig =
-    EnvConfig {_contextEnv :: TUIAppEnv
+    EnvConfig {_contextEnv :: AppEnv
              }
              deriving (Show)
 
@@ -29,8 +28,8 @@ mkForm =
                     (vLimit 1 $ hLimit 15 $ str s <+> fill ' ') <+> w
     in newForm [ label "Environment" @@=
                    radioField contextEnv
-                      [ (StagingEnv, StagingEnvSelector, "Staging")
-                      , (DevEnv, DevEnvSelector, "Dev")
+                      [ (Staging, StagingEnvSelector, "Staging")
+                      , (Dev, DevEnvSelector, "Dev")
                       ]
                ]
 
@@ -66,14 +65,14 @@ app =
         , appAttrMap = const theMap
         }
 
-bootTUI :: IO ()
+bootTUI :: IO AppEnv
 bootTUI = do
     let buildVty = do
           v <- V.mkVty =<< V.standardIOConfig
           V.setMode (V.outputIface v) V.Mouse True
           return v
 
-        f = mkForm (EnvConfig StagingEnv)
+        f = mkForm (EnvConfig Staging)
 
     initialVty <- buildVty
     f' <- customMain initialVty buildVty Nothing app f
@@ -84,3 +83,4 @@ bootTUI = do
     if allFieldsValid f'
        then putStrLn "The final form inputs were valid."
        else putStrLn $ "The final form had invalid inputs: " <> show (invalidFields f')
+    return $ _contextEnv $ formState f'

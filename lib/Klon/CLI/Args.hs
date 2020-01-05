@@ -4,8 +4,7 @@ import Data.Text (Text)
 import GHC.Generics
 import Klon.Command.Connect (ConnectionType (..))
 import Options.Applicative
-
-data AppEnv = Production | Staging | Dev
+import Klon.Config (AppEnv(..))
 
 data Command
   = Command
