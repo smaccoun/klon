@@ -12,9 +12,26 @@ import Network.AWS.EC2
     rInstances,
   )
 import Network.AWS.ECS
+import Klon.Cloud.Resources.Types (ContainerCluster(..))
+import           Network.AWS
+import           Network.AWS.Auth (credFile)
+import           System.IO
+
+mkRunAWS_ :: Text -> IO (AWS b -> IO b)
+mkRunAWS_ awsProfileName = do
+  awsCredFile <- credFile
+  awsEnv <- Network.AWS.newEnv $ FromFile awsProfileName awsCredFile
+  let Auth authEnv' = awsEnv ^. envAuth
+  lgr  <- newLogger Error stdout
+  return $ runAWSCmd awsEnv lgr
+  where
+    runAWSCmd awsEnv lgr cmd' =
+      runResourceT $ runAWS (awsEnv & envLogger .~ lgr) $
+        within NorthVirginia cmd'
+
 
 -- | Randomly picks a single ec2 instance inside of a cluster
-getAnEC2InstancePublicIP :: MonadAWS m => Text -> m Text
+getAnEC2InstancePublicIP :: MonadAWS m => ContainerCluster -> m Text
 getAnEC2InstancePublicIP cluster' = do
   anInstanceID <- getInstanceID_InCluster cluster'
   descInstanceResp <- send $ describeInstances & diiInstanceIds .~ [anInstanceID]
@@ -23,8 +40,8 @@ getAnEC2InstancePublicIP cluster' = do
       Just publicIP = fullInstanceInfo ^. insPublicIPAddress
   return publicIP
 
-getInstanceID_InCluster :: MonadAWS m => Text -> m Text
-getInstanceID_InCluster clusterName' = do
+getInstanceID_InCluster :: MonadAWS m => ContainerCluster -> m Text
+getInstanceID_InCluster (ContainerCluster clusterName') = do
   tasksResp <- send $ listTasks & ltCluster .~ (Just clusterName')
   let firstTaskARN = head $ tasksResp ^. ltrsTaskARNs
   firstTaskResp <-
