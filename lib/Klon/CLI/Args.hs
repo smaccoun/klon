@@ -6,32 +6,59 @@ import Klon.Command.Connect (ConnectionType (..))
 import Options.Applicative
 import Klon.Config (AppEnv(..))
 
-data Command
-  = Command
-      { _inputConnType :: ConnectionType,
-        _inputAppEnv :: AppEnv,
-        _inputAwsProfile :: Maybe Text
+data Command = 
+  Connect ConnectionCmd
+
+data ConnectionCmd = ConnectionCmd ConnectionType AppEnv
+
+data Flags =
+  Flags
+    { _inputAwsProfile :: Maybe Text
+    }
+
+data Args
+  = Args
+      { _command :: Command,
+        _flags   :: Flags
       }
 
-opts :: ParserInfo (Maybe Command)
-opts = info (fullCmdParser <**> helper) idm
+opts :: ParserInfo (Maybe Args)
+opts = info (fullParser <**> helper) idm
 
-captureArgs :: IO (Maybe Command)
+captureArgs :: IO (Maybe Args)
 captureArgs = execParser opts
 
-fullCmdParser :: Parser (Maybe Command)
-fullCmdParser = optional $
-  Command
-    <$> connectionCmdParser
-    <*> envParser
-    <*> awsProfileArgParser
+fullParser :: Parser (Maybe Args)
+fullParser = optional $
+  Args
+    <$> cmdParser 
+    <*> flagParser
 
-connectionCmdParser :: Parser ConnectionType
-connectionCmdParser =
+cmdParser :: Parser Command
+cmdParser =
+  Connect <$> connectCmdParser
+
+connectCmdParser :: Parser ConnectionCmd
+connectCmdParser = ConnectionCmd <$>
+  connTypeParser <*> appEnvArgParser
+
+appEnvArgParser :: Parser AppEnv
+appEnvArgParser = 
+  subparser
+    ( command "dev" (info (pure Dev) (progDesc "Dev Env"))
+      <> command "staging" (info (pure Staging) (progDesc "Staging Env"))
+    )
+
+connTypeParser :: Parser ConnectionType
+connTypeParser =
   subparser
     ( command "ssh" (info (pure SSH) (progDesc "Connect via SSH"))
-        <> command "tunnel" (info (pure Tunnel) (progDesc "Connect via Tunnel"))
+      <> command "tunnel" (info (pure Tunnel) (progDesc "Connect via Tunnel"))
     )
+
+flagParser :: Parser Flags
+flagParser =
+  Flags <$> awsProfileArgParser
 
 envParser :: Parser AppEnv
 envParser =

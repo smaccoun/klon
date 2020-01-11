@@ -15,8 +15,7 @@ data AppEnv = Production | Staging | Dev deriving (Generic, Show, Eq, Ord)
 
 data BaseConfig
   = BaseConfig
-      { _appEnv :: AppEnv,
-        _awsProfile :: Text
+      { _awsProfile :: Text
       }
   deriving (Generic, Show)
 

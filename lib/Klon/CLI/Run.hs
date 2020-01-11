@@ -16,20 +16,24 @@ runCLI = do
   putStrLn $ show baseConfig
   bootProg mbArgs baseConfig
 
+bootProg :: Maybe Args -> BaseConfig -> IO ()
 bootProg mbArgs baseConfig =
   case mbArgs of
     Nothing -> do
       inputConfig <- bootTUI
       print $ show inputConfig
       return ()
-    Just (Command connectType cli mbAwsProf) -> do
-      let awsProf = fromMaybe (_awsProfile baseConfig) mbAwsProf
-      awsRunner <- mkRunAWS_ awsProf
-      ec2IP <- awsRunner $ getAnEC2InstancePublicIP (mapClusterName cli)
-      let server = ServerConnectedToDB ec2IP
-          connectCmd = (getSSHCmd connectType server) (PrivateKeyLoc "~/.ssh/id_rsa")
-      s <- shelly connectCmd
-      print s
+    Just (Args cmd flgs) -> do
+      let modifiedConfig = modifyConfigWithFlags flgs baseConfig
+          awsProf = _awsProfile modifiedConfig 
+      case cmd of
+        Connect (ConnectionCmd connectType appEnv') -> do
+          awsRunner <- mkRunAWS_ awsProf
+          ec2IP <- awsRunner $ getAnEC2InstancePublicIP (mapClusterName appEnv')
+          let server = ServerConnectedToDB ec2IP
+              connectCmd = (getSSHCmd connectType server) (PrivateKeyLoc "~/.ssh/id_rsa")
+          s <- shelly connectCmd
+          print s
   where
     mapClusterName env' = ContainerCluster $
       case env' of
@@ -43,3 +47,9 @@ bootProg mbArgs baseConfig =
       case connectType of
         SSH -> sshCmd server
         Tunnel -> tunnelCmd portFowardStr server
+
+modifyConfigWithFlags :: Flags -> BaseConfig -> BaseConfig
+modifyConfigWithFlags flgs baseConfig =
+  BaseConfig
+    { _awsProfile = fromMaybe (_awsProfile baseConfig) (_inputAwsProfile flgs)
+    }
