@@ -5,6 +5,7 @@ import Data.Generic.HKD
 import Data.Text
 import GHC.Generics
 import Lens.Micro.TH
+import Dhall
 
 newtype PrivateKeyLoc = PrivateKeyLoc Text
 
@@ -17,7 +18,14 @@ data BaseConfig
       { _appEnv :: AppEnv,
         _awsProfile :: Text
       }
-  deriving (Generic)
+  deriving (Generic, Show)
+
+instance Interpret AppEnv
+instance Interpret BaseConfig
+
+readDhall :: Text -> IO BaseConfig
+readDhall fp = 
+  input auto fp 
 
 data Config
   = Config

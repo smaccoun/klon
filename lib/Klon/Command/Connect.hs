@@ -1,14 +1,14 @@
 module Klon.Command.Connect where
 
 import Data.Text
+import GHC.Generics
+import Klon.Cloud.Resources.Types (DBPort (..), DatabaseURL (..), ServerConnectedToDB (..))
+import Klon.Config (PortToConnect (..), PrivateKeyLoc (..))
 import Shelly hiding (FilePath)
-import Klon.Cloud.Resources.Types (ServerConnectedToDB(..), DatabaseURL(..), DBPort(..))
-import Klon.Config (PortToConnect(..), PrivateKeyLoc(..))
 
-data ConnectionType = SSH | Tunnel
+data ConnectionType = SSH | Tunnel deriving (Generic, Eq, Show, Ord)
 
 type MkSSHCmd = FilePath -> Text -> Sh Text
-
 
 baseSSH_Cmd :: PrivateKeyLoc -> [Text] -> Sh Text
 baseSSH_Cmd (PrivateKeyLoc privateKeyLoc) =
@@ -26,4 +26,4 @@ newtype TunnelForwardStr = TunnelForwardStr Text
 
 tunnelForwardArg :: DatabaseURL -> DBPort -> PortToConnect -> TunnelForwardStr
 tunnelForwardArg (DatabaseURL dbUrl) (DBPort dbPort) (PortToConnect connectPort) =
-  TunnelForwardStr $  (pack $ show dbPort) <> ":" <> dbUrl <> ":" <> (pack $ show dbPort)
+  TunnelForwardStr $ (pack $ show dbPort) <> ":" <> dbUrl <> ":" <> (pack $ show dbPort)

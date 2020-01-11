@@ -34,6 +34,7 @@ dependencies:
 - microlens-th
 - vty
 - brick
+- dhall
 
 default-extensions:
   - ConstraintKinds
