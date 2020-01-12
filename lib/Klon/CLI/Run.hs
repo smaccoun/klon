@@ -8,6 +8,7 @@ import Klon.Config
 import Klon.TUI.TUI (bootTUI)
 import Lib
 import Shelly
+import Lens.Micro
 
 runCLI :: IO ()
 runCLI = do
@@ -25,13 +26,14 @@ bootProg mbArgs baseConfig =
       return ()
     Just (Args cmd flgs) -> do
       let modifiedConfig = modifyConfigWithFlags flgs baseConfig
-          awsProf = _awsProfile modifiedConfig 
+          awsProf = _awsProfile modifiedConfig
       case cmd of
         Connect (ConnectionCmd connectType appEnv') -> do
           awsRunner <- mkRunAWS_ awsProf
           ec2IP <- awsRunner $ getAnEC2InstancePublicIP (mapClusterName appEnv')
           let server = ServerConnectedToDB ec2IP
-              connectCmd = (getSSHCmd connectType server) (PrivateKeyLoc "~/.ssh/id_rsa")
+              privateKeyLoc = (PrivateKeyLoc (baseConfig ^. sshConfig ^. sshPrivateKeyLoc))
+              connectCmd = (getSSHCmd connectType server) privateKeyLoc
           s <- shelly connectCmd
           print s
   where
@@ -52,4 +54,5 @@ modifyConfigWithFlags :: Flags -> BaseConfig -> BaseConfig
 modifyConfigWithFlags flgs baseConfig =
   BaseConfig
     { _awsProfile = fromMaybe (_awsProfile baseConfig) (_inputAwsProfile flgs)
+    , _sshConfig = fromMaybe (_sshConfig baseConfig) (Just defaultSSHConfig)
     }

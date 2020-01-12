@@ -1,54 +1,48 @@
 module Klon.Config where
 
 import Data.Functor.Identity (Identity (..))
-import Data.Generic.HKD
 import Data.Text
 import GHC.Generics
 import Lens.Micro.TH
 import Dhall
-
-newtype PrivateKeyLoc = PrivateKeyLoc Text
-
-newtype PortToConnect = PortToConnect Int
 
 data AppEnv = Production | Staging | Dev deriving (Generic, Show, Eq, Ord)
 
 data BaseConfig
   = BaseConfig
       { _awsProfile :: Text
+      , _sshConfig :: SSHConfig
       }
   deriving (Generic, Show)
 
-instance Interpret AppEnv
-instance Interpret BaseConfig
-
-readDhall :: Text -> IO BaseConfig
-readDhall fp = 
-  input auto fp 
-
-data Config
-  = Config
-      { _sshConfig :: SSHConfig
-      }
-  deriving (Generic)
-
 data SSHConfig
   = SSHConfig
-      { _sshPrivateKeyLoc :: PrivateKeyLoc,
-        _portForwardLocalPort :: PortToConnect
+      { _sshPrivateKeyLoc :: Text
+      , _portForwardLocalPort :: Integer
       }
-  deriving (Generic)
+  deriving (Generic, Show)
 
-type InputSSHConfig = HKD SSHConfig Maybe
+newtype PrivateKeyLoc = PrivateKeyLoc {f_PrivateKeyLoc :: Text} deriving (Generic, Show)
+newtype PortToConnect = PortToConnect {f_PortToConnect :: Integer} deriving (Generic, Show)
 
-defaultSSHConfig :: HKD SSHConfig Identity
-defaultSSHConfig = deconstruct SSHConfig
-  { _sshPrivateKeyLoc = PrivateKeyLoc "~/.ssh/id_rsa",
-    _portForwardLocalPort = PortToConnect 8888
+defaultSSHConfig :: SSHConfig
+defaultSSHConfig = SSHConfig
+  { _sshPrivateKeyLoc = "~/.ssh/id_rsa",
+    _portForwardLocalPort = 8888
   }
 
 makeLenses ''BaseConfig
 
 makeLenses ''SSHConfig
 
-makeLenses ''Config
+{- DHALL -}
+
+readDhall :: Text -> IO BaseConfig
+readDhall fp = 
+  input auto fp 
+
+instance Interpret AppEnv
+instance Interpret BaseConfig
+instance Interpret PrivateKeyLoc
+instance Interpret PortToConnect
+instance Interpret SSHConfig

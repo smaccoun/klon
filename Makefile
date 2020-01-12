@@ -1,4 +1,4 @@
-all: build
+all: install
 
 build:
 	stack build --fast
