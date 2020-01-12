@@ -13,7 +13,7 @@ import Lens.Micro
 runCLI :: IO ()
 runCLI = do
   mbArgs <- captureArgs
-  baseConfig <- readDhall "./config.dhall"
+  baseConfig <- readDhall "./dhall/cloudConnect.dhall"
   putStrLn $ show baseConfig
   bootProg mbArgs baseConfig
 
