@@ -30,11 +30,16 @@ dependencies:
 - amazonka-core
 - amazonka-ecs
 - amazonka-ec2
+- amazonka-ssm
 - microlens
 - microlens-th
 - vty
 - brick
 - dhall
+- syb
+- aeson
+- tuple
+- conduit
 
 default-extensions:
   - ConstraintKinds
@@ -61,7 +66,7 @@ default-extensions:
   - UndecidableInstances
   - DeriveAnyClass
   - DerivingStrategies
-
+  - DeriveDataTypeable
 
 library:
   source-dirs: lib

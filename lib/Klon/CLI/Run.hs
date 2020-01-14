@@ -1,14 +1,18 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+
 module Klon.CLI.Run where
 
 import Data.Maybe (fromMaybe)
 import Klon.Cloud.Resources.AWS.ECS
+import Klon.Cloud.Resources.AWS.SSM
 import Klon.Cloud.Resources.Types
 import Klon.Command.Connect
 import Klon.Config
 import Klon.TUI.TUI (bootTUI)
+import Lens.Micro
 import Lib
 import Shelly
-import Lens.Micro
+import Data.Proxy
 
 runCLI :: IO ()
 runCLI = do
@@ -31,6 +35,8 @@ bootProg mbArgs baseConfig =
         Connect (ConnectionCmd connectType appEnv') -> do
           awsRunner <- mkRunAWS_ awsProf
           ec2IP <- awsRunner $ getAnEC2InstancePublicIP (mapClusterName appEnv')
+          r2 <- mkRunAWS_ awsProf
+          pgConf <- r2 $ gSetFromSSM (Proxy :: Proxy PGConf)
           let server = ServerConnectedToDB ec2IP
               privateKeyLoc = (PrivateKeyLoc (baseConfig ^. sshConfig ^. sshPrivateKeyLoc))
               connectCmd = (getSSHCmd connectType server) privateKeyLoc
@@ -53,6 +59,6 @@ bootProg mbArgs baseConfig =
 modifyConfigWithFlags :: Flags -> BaseConfig -> BaseConfig
 modifyConfigWithFlags flgs baseConfig =
   BaseConfig
-    { _awsProfile = fromMaybe (_awsProfile baseConfig) (_inputAwsProfile flgs)
-    , _sshConfig = fromMaybe (_sshConfig baseConfig) (Just defaultSSHConfig)
+    { _awsProfile = fromMaybe (_awsProfile baseConfig) (_inputAwsProfile flgs),
+      _sshConfig = fromMaybe (_sshConfig baseConfig) (Just defaultSSHConfig)
     }

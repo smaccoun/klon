@@ -17,7 +17,7 @@ import           Network.AWS
 import           Network.AWS.Auth (credFile)
 import           System.IO
 
-mkRunAWS_ :: Text -> IO (AWS b -> IO b)
+mkRunAWS_ :: forall b. Text -> IO (AWS b -> IO b)
 mkRunAWS_ awsProfileName = do
   awsCredFile <- credFile
   awsEnv <- Network.AWS.newEnv $ FromFile awsProfileName awsCredFile
@@ -25,6 +25,7 @@ mkRunAWS_ awsProfileName = do
   lgr  <- newLogger Error stdout
   return $ runAWSCmd awsEnv lgr
   where
+    runAWSCmd :: Env -> Logger -> AWS a -> IO a
     runAWSCmd awsEnv lgr cmd' =
       runResourceT $ runAWS (awsEnv & envLogger .~ lgr) $
         within NorthVirginia cmd'

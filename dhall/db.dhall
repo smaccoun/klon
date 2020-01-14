@@ -1,4 +1,3 @@
-   let pgPort : Integer = +5432
    let types = ./types.dhall
 in let AppEnv = types.AppEnv
    let dbConfig = types.DBConfig
