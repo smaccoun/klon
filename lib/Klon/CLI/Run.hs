@@ -13,6 +13,7 @@ import Lens.Micro
 import Lib
 import Shelly
 import Data.Proxy
+import Klon.Cloud.Resources.AWS.Run
 
 runCLI :: IO ()
 runCLI = do
@@ -33,13 +34,12 @@ bootProg mbArgs baseConfig =
           awsProf = _awsProfile modifiedConfig
       case cmd of
         Connect (ConnectionCmd connectType appEnv') -> do
-          awsRunner <- mkRunAWS_ awsProf
-          ec2IP <- awsRunner $ getAnEC2InstancePublicIP (mapClusterName appEnv')
-          r2 <- mkRunAWS_ awsProf
-          pgConf <- r2 $ gSetFromSSM (Proxy :: Proxy PGConf)
+          awsCfg <- mkAwsConfig awsProf
+          ec2IP <- runAWS_IO awsCfg $ getAnEC2InstancePublicIP (mapClusterName appEnv')
+          Just pgConf <- runAWS_IO awsCfg $ gSetFromSSM (Proxy :: Proxy PGConf) id
           let server = ServerConnectedToDB ec2IP
               privateKeyLoc = (PrivateKeyLoc (baseConfig ^. sshConfig ^. sshPrivateKeyLoc))
-              connectCmd = (getSSHCmd connectType server) privateKeyLoc
+              connectCmd = (getSSHCmd pgConf connectType server) privateKeyLoc
           s <- shelly connectCmd
           print s
   where
@@ -47,14 +47,17 @@ bootProg mbArgs baseConfig =
       case env' of
         Staging -> "staging"
         Dev -> "dev"
-    localPort = PortToConnect 8888
-    dbPort = DBPort 5432
-    dbUrl = DatabaseURL "fakeUrl"
-    portFowardStr = tunnelForwardArg dbUrl dbPort localPort
-    getSSHCmd connectType server =
+    getSSHCmd pgConf connectType server =
       case connectType of
         SSH -> sshCmd server
-        Tunnel -> tunnelCmd portFowardStr server
+        Tunnel -> tunnelCmd (portFowardStr pgConf) server
+
+portFowardStr :: PGConf -> TunnelForwardStr
+portFowardStr PGConf{..} = 
+  let localPort = PortToConnect 8888
+      dbPort = DBPort pgPort
+      dbUrl = DatabaseURL pgHost
+  in tunnelForwardArg dbUrl dbPort localPort
 
 modifyConfigWithFlags :: Flags -> BaseConfig -> BaseConfig
 modifyConfigWithFlags flgs baseConfig =

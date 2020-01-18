@@ -17,20 +17,6 @@ import           Network.AWS
 import           Network.AWS.Auth (credFile)
 import           System.IO
 
-mkRunAWS_ :: forall b. Text -> IO (AWS b -> IO b)
-mkRunAWS_ awsProfileName = do
-  awsCredFile <- credFile
-  awsEnv <- Network.AWS.newEnv $ FromFile awsProfileName awsCredFile
-  let Auth authEnv' = awsEnv ^. envAuth
-  lgr  <- newLogger Error stdout
-  return $ runAWSCmd awsEnv lgr
-  where
-    runAWSCmd :: Env -> Logger -> AWS a -> IO a
-    runAWSCmd awsEnv lgr cmd' =
-      runResourceT $ runAWS (awsEnv & envLogger .~ lgr) $
-        within NorthVirginia cmd'
-
-
 -- | Randomly picks a single ec2 instance inside of a cluster
 getAnEC2InstancePublicIP :: MonadAWS m => ContainerCluster -> m Text
 getAnEC2InstancePublicIP cluster' = do

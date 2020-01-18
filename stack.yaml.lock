@@ -46,6 +46,13 @@ packages:
       sha256: 14a7382ed189d03aaf35adecece88dfaf6c78829c4fbd16f3db7e0df9f7cb39d
   original:
     hackage: amazonka-ssm-1.6.1@sha256:9b1c4673dd4a8f713291fb325c2179daab7cc94a962c8e1fab6968bd572c8148,7854
+- completed:
+    hackage: amazonka-rds-1.6.1@sha256:61a7564ed1de0db0752b9b869a8f8b173222ac33b17e417df42cf42567354001,7556
+    pantry-tree:
+      size: 23683
+      sha256: bd22bcae51b078b2a9d42b35863fc47946abee3cfa4128c5ad2e9fce76c80e69
+  original:
+    hackage: amazonka-rds-1.6.1@sha256:61a7564ed1de0db0752b9b869a8f8b173222ac33b17e417df42cf42567354001,7556
 snapshots:
 - completed:
     size: 524155

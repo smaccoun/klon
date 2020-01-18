@@ -41,6 +41,7 @@ extra-deps:
 - amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
 - amazonka-ec2-1.6.1@sha256:208908e8a30937a3ec640e8b53de2708d805a28c3900dbf447db12a61d9b7a50,16305
 - amazonka-ssm-1.6.1@sha256:9b1c4673dd4a8f713291fb325c2179daab7cc94a962c8e1fab6968bd572c8148,7854
+- amazonka-rds-1.6.1@sha256:61a7564ed1de0db0752b9b869a8f8b173222ac33b17e417df42cf42567354001,7556
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
