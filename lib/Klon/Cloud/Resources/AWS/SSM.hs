@@ -1,3 +1,5 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 
 module Klon.Cloud.Resources.AWS.SSM where
@@ -32,16 +34,21 @@ data PGConf
   = PGConf
       { pgPort :: Int,
         pgUser :: Text,
-        pgDb   :: Text,
+        pgDb :: Text,
         pgPass :: Text,
         pgHost :: Text
       }
-  deriving (Generic, FromJSON, Show, Data)
+  deriving (Generic, FromJSON, Show, FromSSM)
 
-gSetFromSSM :: (FromJSON r, Data r) => Proxy r -> (Text -> Text) -> AWS (Maybe r)
-gSetFromSSM proxy modifyField = do
+class FromSSM a where
+  fromSSM :: forall a. (FromJSON a, Generic a, Selectors (Rep a)) => (Text -> Text) -> AWS (Maybe a)
+  default fromSSM :: forall a m. (Generic a, FromJSON a, Selectors (Rep a)) => (Text -> Text) -> AWS (Maybe a)
+  fromSSM withModifyField = (gSetFromSSM @a) withModifyField
+
+gSetFromSSM :: forall r. (FromJSON r, Selectors (Rep r)) => (Text -> Text) -> AWS (Maybe r)
+gSetFromSSM modifyField = do
   let fNames =
-        (recordFieldNames proxy)
+        (selectors (Proxy @(Rep r)))
           & fmap (modifyField . T.pack)
           & NE.fromList
   paramList <- getParams fNames
@@ -56,9 +63,21 @@ gSetFromSSM proxy modifyField = do
     jsonObjFields =
       fmap (\(k, v) -> k <> ": " <> v)
 
-recordFieldNames :: forall r. Data r => Proxy r -> [String]
-recordFieldNames _ =
-  concat $
-    dataTypeOf (undefined :: r) 
-      & dataTypeConstrs
-      & fmap constrFields
+class Selectors rep where
+  selectors :: Proxy rep -> [String]
+
+instance Selectors f => Selectors (M1 D x f) where
+  selectors _ = selectors (Proxy :: Proxy f)
+
+instance Selectors f => Selectors (M1 C x f) where
+  selectors _ = selectors (Proxy :: Proxy f)
+
+instance (Selector s, Typeable t) => Selectors (M1 S s (K1 R t)) where
+  selectors _ =
+    [selName (undefined :: M1 S s (K1 R t) ())]
+
+instance (Selectors a, Selectors b) => Selectors (a :*: b) where
+  selectors _ = selectors (Proxy :: Proxy a) ++ selectors (Proxy :: Proxy b)
+
+instance Selectors U1 where
+  selectors _ = []

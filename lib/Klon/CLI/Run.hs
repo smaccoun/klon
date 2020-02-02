@@ -14,6 +14,7 @@ import Lib
 import Shelly
 import Data.Proxy
 import Klon.Cloud.Resources.AWS.Run
+import Klon.Cloud.Resources.AWS.RDS
 
 runCLI :: IO ()
 runCLI = do
@@ -23,7 +24,9 @@ runCLI = do
   bootProg mbArgs baseConfig
 
 bootProg :: Maybe Args -> BaseConfig -> IO ()
-bootProg mbArgs baseConfig =
+bootProg mbArgs baseConfig = do
+  awsCfg <- mkAwsConfig $ _awsProfile baseConfig
+  rdsInfo <- runAWS_IO awsCfg $ allInstanceInfo
   case mbArgs of
     Nothing -> do
       inputConfig <- bootTUI
@@ -34,9 +37,8 @@ bootProg mbArgs baseConfig =
           awsProf = _awsProfile modifiedConfig
       case cmd of
         Connect (ConnectionCmd connectType appEnv') -> do
-          awsCfg <- mkAwsConfig awsProf
           ec2IP <- runAWS_IO awsCfg $ getAnEC2InstancePublicIP (mapClusterName appEnv')
-          Just pgConf <- runAWS_IO awsCfg $ gSetFromSSM (Proxy :: Proxy PGConf) id
+          Just pgConf <- runAWS_IO awsCfg $ (fromSSM @PGConf) id
           let server = ServerConnectedToDB ec2IP
               privateKeyLoc = (PrivateKeyLoc (baseConfig ^. sshConfig ^. sshPrivateKeyLoc))
               connectCmd = (getSSHCmd pgConf connectType server) privateKeyLoc
