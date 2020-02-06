@@ -30,16 +30,6 @@ getParams paramsToGet = do
       asMaybeList = (\p -> sequenceT (p ^. pName, p ^. pValue)) <$> params
   return $ fromMaybe [] $ sequence asMaybeList
 
-data PGConf
-  = PGConf
-      { pgPort :: Int,
-        pgUser :: Text,
-        pgDb :: Text,
-        pgPass :: Text,
-        pgHost :: Text
-      }
-  deriving (Generic, FromJSON, Show, FromSSM)
-
 class FromSSM a where
   fromSSM :: forall a. (FromJSON a, Generic a, Selectors (Rep a)) => (Text -> Text) -> AWS (Maybe a)
   default fromSSM :: forall a m. (Generic a, FromJSON a, Selectors (Rep a)) => (Text -> Text) -> AWS (Maybe a)

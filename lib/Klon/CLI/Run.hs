@@ -15,6 +15,9 @@ import Shelly
 import Data.Proxy
 import Klon.Cloud.Resources.AWS.Run
 import Klon.Cloud.Resources.AWS.RDS
+import Data.Aeson
+import Data.Text (Text)
+import GHC.Generics
 
 runCLI :: IO ()
 runCLI = do
@@ -67,3 +70,14 @@ modifyConfigWithFlags flgs baseConfig =
     { _awsProfile = fromMaybe (_awsProfile baseConfig) (_inputAwsProfile flgs),
       _sshConfig = fromMaybe (_sshConfig baseConfig) (Just defaultSSHConfig)
     }
+
+
+data PGConf
+  = PGConf
+      { pgPort :: Int,
+        pgUser :: Text,
+        pgDb :: Text,
+        pgPass :: Text,
+        pgHost :: Text
+      }
+  deriving (Generic, FromJSON, Show, FromSSM)

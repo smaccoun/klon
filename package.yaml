@@ -25,7 +25,6 @@ dependencies:
 - optparse-applicative
 - text
 - shelly
-- higgledy
 - amazonka
 - amazonka-core
 - amazonka-ecs
@@ -80,6 +79,7 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -ddump-to-file -ddump-hi
     dependencies:
     - klon
 
