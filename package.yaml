@@ -31,6 +31,7 @@ dependencies:
 - amazonka-ec2
 - amazonka-ssm
 - amazonka-rds
+- amazonka-ecr
 - microlens
 - microlens-th
 - vty
@@ -40,6 +41,8 @@ dependencies:
 - aeson
 - tuple
 - conduit
+- rio
+- mtl
 
 default-extensions:
   - ConstraintKinds
