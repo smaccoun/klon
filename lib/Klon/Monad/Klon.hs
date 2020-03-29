@@ -13,10 +13,9 @@ import Network.AWS.Auth (credFile)
 import RIO
 import System.IO
 import Klon.Monad.AWS
+import RIO.Orphans
 
-newtype KlonM a
-  = KlonM {unKlonM :: (RIO AppConfig a)}
-  deriving anyclass (Generic, Functor, Applicative, Monad, MonadIO, MonadReader AppConfig, MonadFail, MonadThrow, MonadCatch, MonadUnliftIO)
+type KlonM = RIO AppConfig
 
 instance MonadAWS KlonM where
   liftAWS awsm = do
@@ -24,4 +23,4 @@ instance MonadAWS KlonM where
     runAWS_IO (env ^. appAwsEnv) awsm
 
 runKlonM :: AppConfig -> KlonM a -> IO a
-runKlonM cfg (KlonM riok) = runRIO cfg riok
+runKlonM cfg riok = runRIO cfg riok

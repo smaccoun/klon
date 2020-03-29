@@ -11,3 +11,8 @@ import Klon.Config.RunConfig
 main :: IO ()
 main = do
   runCLI
+
+dre :: KlonM a -> IO a
+dre klm = do
+  cfg <- mkAppConfig "default"
+  runKlonM cfg klm

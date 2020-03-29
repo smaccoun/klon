@@ -38,7 +38,7 @@ getLastNStoredImages :: (MonadAWS m, MonadReader env m, HasECR_Config env) => In
 getLastNStoredImages numImages = do
   repo' <- view ecrRepoL
   allImgs <- fetchImages repo'
-  return $ sortBy mostRecent (allImgs ^. dirsImageDetails)
+  return (allImgs ^. dirsImageDetails)
   where
     fetchImages repo' =
       Aws.send $ 
