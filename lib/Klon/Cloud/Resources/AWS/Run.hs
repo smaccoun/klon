@@ -6,7 +6,6 @@ import Lens.Micro.TH
 import Network.AWS
 import qualified Network.AWS as Aws
 import Network.AWS.Auth (credFile)
-import Network.AWS.Auth (credFile)
 import System.IO
 import RIO
 import Klon.Command.Deploy

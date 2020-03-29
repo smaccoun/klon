@@ -46,6 +46,7 @@ dependencies:
 - typed-process
 - git
 - exceptions
+- freer-simple
 
 default-extensions:
   - ConstraintKinds
