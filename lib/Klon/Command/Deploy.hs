@@ -1,31 +1,34 @@
 module Klon.Command.Deploy where
 
-import RIO
+import Data.List (sortBy)
+import Klon.Cloud.Resources.AWS.ECR
+import Lens.Micro ((.~))
+import Lens.Micro.TH
 import Network.AWS
 import qualified Network.AWS as Aws
 import Network.AWS.ECR.DescribeImages
-import Data.List (sortBy)
-import Lens.Micro ((.~))
-import Lens.Micro.TH
 import Network.AWS.ECR.Types (ImageDetail)
-import Klon.Cloud.Resources.AWS.ECR
+import RIO
 
 class HasECS_DeploymentConfig env where
   ecsDeployConfigL :: Lens' env Text
 
 data DeployOptions = LastPushedImage
 
-deploy :: forall env m. 
-    (MonadAWS m, MonadFail m,
+deploy ::
+  forall env m.
+  ( MonadAWS m,
+    MonadFail m,
     MonadReader env m,
     HasDockerImageRepo env,
     HasECR_Config env,
     HasECS_DeploymentConfig env
-    ) => DeployOptions
-      -> m ()
+  ) =>
+  DeployOptions ->
+  m ()
 deploy options = do
   env' <- ask
-  img <- getImageToPush options 
+  img <- getImageToPush options
   image' <- pullImage img
   deployImage (env' ^. ecsDeployConfigL) image'
 
@@ -36,14 +39,15 @@ getImageToPush options =
       [lastImg] <- getLastNStoredImages 1
       return lastImg
 
-
-pullAndDeployToECS :: forall env m. 
-    (MonadAWS m,
+pullAndDeployToECS ::
+  forall env m.
+  ( MonadAWS m,
     MonadReader env m,
-    HasDockerImageRepo env, 
+    HasDockerImageRepo env,
     HasECS_DeploymentConfig env
-    ) => ImageDetail
-      -> m ()
+  ) =>
+  ImageDetail ->
+  m ()
 pullAndDeployToECS tag' = do
   env' <- ask
   image' <- pullImage $ dockerImageLoc (env' ^. dockerImageRepoL)

@@ -14,7 +14,7 @@ import Lens.Micro
 import Lib
 import Shelly
 import Data.Proxy
-import Klon.Cloud.Resources.AWS.Run
+import Klon.Monad.AWS
 import Klon.Cloud.Resources.AWS.RDS
 import Data.Aeson
 import Data.Text (Text)
