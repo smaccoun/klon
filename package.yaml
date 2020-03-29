@@ -43,6 +43,9 @@ dependencies:
 - conduit
 - rio
 - mtl
+- typed-process
+- git
+- exceptions
 
 default-extensions:
   - ConstraintKinds

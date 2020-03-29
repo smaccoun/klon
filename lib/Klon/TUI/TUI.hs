@@ -11,7 +11,7 @@ import           Data.Monoid          ((<>))
 import           GHC.Generics
 import qualified Graphics.Vty         as V
 import           Lens.Micro.TH
-import Klon.Config (AppEnv(..))
+import Klon.Config.Config (AppEnv(..))
 import Brick.Types (ViewportType(..))
 import Brick.BChan
 import Control.Monad.IO.Class (liftIO)

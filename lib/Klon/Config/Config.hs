@@ -1,4 +1,4 @@
-module Klon.Config where
+module Klon.Config.Config where
 
 import Data.Functor.Identity (Identity (..))
 import Data.Text

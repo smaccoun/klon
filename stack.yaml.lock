@@ -60,6 +60,13 @@ packages:
       sha256: c8801ad03003dd1e16fc1c4dec8f9e1157120ddd3f7a9508899ff35e2a39c2f1
   original:
     hackage: amazonka-ecr-1.6.1@sha256:19f84313590aab45c8d6e810387c06822554967dd799ffbd0f0087a14e921146,3871
+- completed:
+    hackage: git-0.3.0@sha256:dc070840ab24792c9664b9e3e69c9d55d30fc36fee41049c548bb0e8ec83c919,3448
+    pantry-tree:
+      size: 1900
+      sha256: da2861008035f16e43f0c4ea293cec15e04b398c911fa99322d159e19cd0266e
+  original:
+    hackage: git-0.3.0@sha256:dc070840ab24792c9664b9e3e69c9d55d30fc36fee41049c548bb0e8ec83c919,3448
 snapshots:
 - completed:
     size: 524155

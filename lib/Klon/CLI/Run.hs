@@ -7,7 +7,8 @@ import Klon.Cloud.Resources.AWS.ECS
 import Klon.Cloud.Resources.AWS.SSM
 import Klon.Cloud.Resources.Types
 import Klon.Command.Connect
-import Klon.Config
+import Klon.Config.Config
+import Klon.Config.RunConfig (mkAwsConfig)
 import Klon.TUI.TUI (bootTUI)
 import Lens.Micro
 import Lib

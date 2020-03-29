@@ -3,7 +3,7 @@ module Klon.Command.Connect where
 import Data.Text
 import GHC.Generics
 import Klon.Cloud.Resources.Types (DBPort (..), DatabaseURL (..), ServerConnectedToDB (..))
-import Klon.Config (PortToConnect (..), PrivateKeyLoc (..))
+import Klon.Config.Config (PortToConnect (..), PrivateKeyLoc (..))
 import Shelly hiding (FilePath)
 
 data ConnectionType = SSH | Tunnel deriving (Generic, Eq, Show, Ord)

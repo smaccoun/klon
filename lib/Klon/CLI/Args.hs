@@ -4,7 +4,7 @@ import Data.Text (Text)
 import GHC.Generics
 import Klon.Command.Connect (ConnectionType (..))
 import Options.Applicative
-import Klon.Config (AppEnv(..))
+import Klon.Config.Config (AppEnv(..))
 
 data Command = 
   Connect ConnectionCmd
