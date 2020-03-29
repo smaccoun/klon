@@ -22,3 +22,6 @@ instance MonadAWS KlonM where
   liftAWS awsm = do
     env <- ask
     runAWS_IO (env ^. appAwsEnv) awsm
+
+runKlonM :: AppConfig -> KlonM a -> IO a
+runKlonM cfg (KlonM riok) = runRIO cfg riok

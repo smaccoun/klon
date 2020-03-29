@@ -1,23 +1,25 @@
 module Klon.Config.RunConfig where
 
 import Data.Text hiding (head)
+import Klon.Cloud.Resources.AWS.ECR
+import Klon.Command.Deploy
 import Lens.Micro
 import Lens.Micro.TH
 import Network.AWS
 import qualified Network.AWS as Aws
 import Network.AWS.Auth (credFile)
 import Network.AWS.Auth (credFile)
-import System.IO
 import RIO
-import Klon.Command.Deploy
-import Klon.Cloud.Resources.AWS.ECR
+import System.IO
 
-data AppConfig =
-  AppConfig
-    {_appAwsEnv  :: !Aws.Env
-    ,_appLogFunc :: !LogFunc
-    ,_ecrConfig  :: !RemoteImageConfig
-    } deriving (Generic)
+data AppConfig
+  = AppConfig
+      { _appAwsEnv :: !Aws.Env,
+        _appLogFunc :: !LogFunc,
+        _ecrConfig :: !RemoteImageConfig,
+        _ecsDeploymentConfig :: Text
+      }
+  deriving (Generic)
 
 makeLenses ''AppConfig
 
@@ -36,19 +38,22 @@ mkAppConfig awsProfileName = do
   logOptions' <- logOptionsHandle stderr False
   let logOptions = setLogUseTime True $ setLogUseLoc True logOptions'
   withLogFunc logOptions $ \logFunc -> do
-    return $ 
+    return $
       AppConfig
-        {_appAwsEnv = awsEnv'
-        ,_appLogFunc = logFunc
-        ,_ecrConfig = RemoteImageConfig "fakeRepo" "fakeDeployment"
+        { _appAwsEnv = awsEnv',
+          _appLogFunc = logFunc,
+          _ecrConfig = RemoteImageConfig "fakeRepo" "fakeDeployment",
+          _ecsDeploymentConfig = "fakeDeployConfig"
         }
-
 
 instance Aws.HasEnv AppConfig where
   environment = lens _appAwsEnv (\x y -> x {_appAwsEnv = y})
 
 instance HasECR_Config AppConfig where
-  ecrRepoL = ecrConfig.repo
+  ecrRepoL = ecrConfig . repo
+
+instance HasECS_DeploymentConfig AppConfig where
+  ecsDeployConfigL = lens _ecsDeploymentConfig (\x y -> x {_ecsDeploymentConfig = y})
 
 instance HasLogFunc AppConfig where
   logFuncL = lens _appLogFunc (\x y -> x {_appLogFunc = y})
