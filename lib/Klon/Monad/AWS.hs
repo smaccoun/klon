@@ -5,7 +5,7 @@ module Klon.Monad.AWS where
 -- import Control.Monad.Freer.TH
 
 import Klon.Cloud.Resources.AWS.ECR
-import Klon.Config.RunConfig
+import Klon.Config.Types
 import Lens.Micro
 import qualified Network.AWS as Aws
 import RIO

@@ -1,13 +1,15 @@
 module Klon.Cloud.Resources.AWS.ECR where
 
 import RIO
+import RIO.List (headMaybe)
 import Network.AWS
 import qualified Network.AWS as Aws
 import Network.AWS.ECR.DescribeImages
 import Data.List (sortBy)
 import Lens.Micro ((.~))
 import Lens.Micro.TH
-import Network.AWS.ECR.Types (ImageDetail)
+import Network.AWS.ECR.Types (ImageDetail(..), idImageTags)
+import Klon.Config.Types
 
 class HasDockerImageRepo env where
   dockerImageRepoL :: Lens' env Text
@@ -22,13 +24,6 @@ dockerImageLoc = undefined
 pullImage = undefined
 deployImage = undefined
 
-data RemoteImageConfig =
-  RemoteImageConfig
-    {_repo :: Text
-    ,_deploymentConfig :: Text
-    } deriving (Generic)
-
-makeLenses ''RemoteImageConfig
 
 instance HasECR_Config RemoteImageConfig where
   ecrRepoL = repo
@@ -44,4 +39,18 @@ getLastNStoredImages numImages = do
       Aws.send $ 
         describeImages repo'
         & (diMaxResults .~ Just (fromIntegral numImages))
-    mostRecent = undefined
+
+getImageForCommit :: (MonadAWS m, MonadReader env m, HasECR_Config env) => Text -> m (Maybe ImageDetail)
+getImageForCommit tag'= do
+  mostRecentImg <- getLastNStoredImages 1
+  return $ 
+    (headMaybe mostRecentImg) 
+      >>= whenHasTag tag'
+  where
+    whenHasTag :: Text -> ImageDetail -> Maybe ImageDetail
+    whenHasTag tagToMatch img = 
+      if tagToMatch `elem` (img ^. idImageTags) then
+        Just img
+      else Nothing
+      
+

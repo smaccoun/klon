@@ -2,9 +2,6 @@ module Klon.Monad.Klon where
 
 import Control.Monad.Catch
 import Data.Text hiding (head)
-import Klon.Cloud.Resources.AWS.ECR
-import Klon.Command.Deploy
-import Klon.Config.RunConfig
 import Lens.Micro
 import Lens.Micro.TH
 import Network.AWS
@@ -12,8 +9,9 @@ import qualified Network.AWS as Aws
 import Network.AWS.Auth (credFile)
 import RIO
 import System.IO
-import Klon.Monad.AWS
 import RIO.Orphans
+import Klon.Config.Types
+import Klon.Monad.AWS
 
 type KlonM = RIO AppContext
 

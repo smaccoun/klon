@@ -11,19 +11,9 @@ import Network.AWS.Auth (credFile)
 import RIO
 import System.IO
 import Dhall
+import Klon.Config.Types
 import Klon.Config.Config
 
-data AppContext
-  = AppContext
-      { _appAwsEnv           :: !Aws.Env,
-        _appLogFunc          :: !LogFunc,
-        _remoteImageRepo     :: !RemoteImageConfig,
-        _ecsDeploymentConfig :: Text
-      }
-  deriving (Generic)
-  deriving anyclass (Show)
-
-makeLenses ''AppContext
 
 mkAwsConfig :: Text -> IO Aws.Env
 mkAwsConfig awsProfileName = do
