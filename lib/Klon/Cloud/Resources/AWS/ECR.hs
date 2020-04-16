@@ -42,15 +42,11 @@ getLastNStoredImages numImages = do
 
 getImageForCommit :: (MonadAWS m, MonadReader env m, HasECR_Config env) => Text -> m (Maybe ImageDetail)
 getImageForCommit tag'= do
-  mostRecentImg <- getLastNStoredImages 1
-  return $ 
-    (headMaybe mostRecentImg) 
-      >>= whenHasTag tag'
+  mostRecentImgs <- getLastNStoredImages 100
+  return $ headMaybe $ mostRecentImgs `whereHasTag` tag'
   where
-    whenHasTag :: Text -> ImageDetail -> Maybe ImageDetail
-    whenHasTag tagToMatch img = 
-      if tagToMatch `elem` (img ^. idImageTags) then
-        Just img
-      else Nothing
+    whereHasTag :: [ImageDetail] -> Text -> [ImageDetail]
+    whereHasTag imgs tagToMatch = 
+      filter (\img -> tagToMatch `elem` (img ^. idImageTags)) imgs
       
 
