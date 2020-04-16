@@ -2,3 +2,4 @@
 klon.cabal
 *~
 *.dump-hi
+config.dhall
