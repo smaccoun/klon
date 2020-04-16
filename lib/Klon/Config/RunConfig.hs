@@ -8,7 +8,6 @@ import Lens.Micro.TH
 import Network.AWS
 import qualified Network.AWS as Aws
 import Network.AWS.Auth (credFile)
-import Network.AWS.Auth (credFile)
 import RIO
 import System.IO
 
@@ -20,6 +19,7 @@ data AppConfig
         _ecsDeploymentConfig :: Text
       }
   deriving (Generic)
+  deriving anyclass (Show)
 
 makeLenses ''AppConfig
 

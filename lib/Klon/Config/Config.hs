@@ -41,8 +41,8 @@ readDhall :: Text -> IO BaseConfig
 readDhall fp = 
   input auto fp 
 
-instance Interpret AppEnv
-instance Interpret BaseConfig
-instance Interpret PrivateKeyLoc
-instance Interpret PortToConnect
-instance Interpret SSHConfig
+instance FromDhall AppEnv
+instance FromDhall BaseConfig
+instance FromDhall PrivateKeyLoc
+instance FromDhall PortToConnect
+instance FromDhall SSHConfig

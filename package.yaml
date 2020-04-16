@@ -37,6 +37,8 @@ dependencies:
 - vty
 - brick
 - dhall
+- dhall-json
+- dhall-yaml
 - syb
 - aeson
 - tuple

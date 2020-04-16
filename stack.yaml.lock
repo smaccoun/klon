@@ -67,6 +67,62 @@ packages:
       sha256: da2861008035f16e43f0c4ea293cec15e04b398c911fa99322d159e19cd0266e
   original:
     hackage: git-0.3.0@sha256:dc070840ab24792c9664b9e3e69c9d55d30fc36fee41049c548bb0e8ec83c919,3448
+- completed:
+    hackage: dhall-yaml-1.0.3@sha256:500c094997c83587cc96c3fd1ccdef67a610c189cb0b9a8855a673dc121deec2,3385
+    pantry-tree:
+      size: 1245
+      sha256: c51a1d9b3f3b14fd60bb06997e15c70366279eabfb7c6e4f38afe928f3b05389
+  original:
+    hackage: dhall-yaml-1.0.3@sha256:500c094997c83587cc96c3fd1ccdef67a610c189cb0b9a8855a673dc121deec2,3385
+- completed:
+    hackage: HsYAML-0.2.1.0@sha256:6e63cbc919543c5a837040f063e96fe0a4e43bef8ab3c057cef8f122396fdc2d,5469
+    pantry-tree:
+      size: 1340
+      sha256: 77d9299977dfbc7836cbbcb51fe890bb70d485d9dd89a3bbe54822635faa8108
+  original:
+    hackage: HsYAML-0.2.1.0@sha256:6e63cbc919543c5a837040f063e96fe0a4e43bef8ab3c057cef8f122396fdc2d,5469
+- completed:
+    hackage: HsYAML-aeson-0.2.0.0@sha256:6f9c10b46162fbd1562d89da94b46f3b7e8b5731a71fdb73438a2a251997a490,1853
+    pantry-tree:
+      size: 234
+      sha256: db01d1a92edd78336e0d4a608f0a8153cb8f7612fc8ae9cd45e9014c941d6db9
+  original:
+    hackage: HsYAML-aeson-0.2.0.0@sha256:6f9c10b46162fbd1562d89da94b46f3b7e8b5731a71fdb73438a2a251997a490,1853
+- completed:
+    hackage: dhall-1.31.0@sha256:6336eba19ea50c13f1d7b026aea8e1a70c2bee70001b40ae74c04fb48214d85d,33110
+    pantry-tree:
+      size: 253740
+      sha256: 3382be2dc5de92f302beb3c105505c52d6e31960868d5c847a8a789b5d9a6fa8
+  original:
+    hackage: dhall-1.31.0@sha256:6336eba19ea50c13f1d7b026aea8e1a70c2bee70001b40ae74c04fb48214d85d,33110
+- completed:
+    hackage: dhall-json-1.6.3@sha256:6d052b86027f14c9342cc54acb32c10b3fe1ac24353f5e389ca5b3719ea95160,4087
+    pantry-tree:
+      size: 3990
+      sha256: 54502db384f8e0df2950b458aaaddea70835b6ce7f87712180914e6a342d5475
+  original:
+    hackage: dhall-json-1.6.3@sha256:6d052b86027f14c9342cc54acb32c10b3fe1ac24353f5e389ca5b3719ea95160,4087
+- completed:
+    hackage: aeson-yaml-1.0.6.0@sha256:bdf6d67265d9a3e251122fa53d2f0f19e0b9865d928e5d6efb77d4754ca3f6cb,1975
+    pantry-tree:
+      size: 451
+      sha256: 959322f98d04221b5680efafb75a9009fd3c5a2d737d46330be9c466091619f7
+  original:
+    hackage: aeson-yaml-1.0.6.0@sha256:bdf6d67265d9a3e251122fa53d2f0f19e0b9865d928e5d6efb77d4754ca3f6cb,1975
+- completed:
+    hackage: cborg-json-0.2.2.0@sha256:55eb9d8e897ae9fb6c8da7aed882d0c78b326632b1b58966921a1fcde2b88b8d,2035
+    pantry-tree:
+      size: 328
+      sha256: 81b4fcef3ec883911ad44b6e0b8d22a3cb7bd727c710735662e7138d9aa6620e
+  original:
+    hackage: cborg-json-0.2.2.0@sha256:55eb9d8e897ae9fb6c8da7aed882d0c78b326632b1b58966921a1fcde2b88b8d,2035
+- completed:
+    hackage: prettyprinter-1.6.1@sha256:11876ec94a79048e1d2942a99bfaa6f2be5222eafeedac6a9545673a79465009,5459
+    pantry-tree:
+      size: 2194
+      sha256: b8ddc48e267da0bc8da3082929b478df80c3c986865394f93e7bc7631c0031cf
+  original:
+    hackage: prettyprinter-1.6.1@sha256:11876ec94a79048e1d2942a99bfaa6f2be5222eafeedac6a9545673a79465009,5459
 snapshots:
 - completed:
     size: 524155
