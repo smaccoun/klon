@@ -44,7 +44,8 @@ bootProg mbArgs baseConfig = do
           ec2IP <- runAWS_IO awsCfg $ getAnEC2InstancePublicIP (mapClusterName appEnv')
           Just pgConf <- runAWS_IO awsCfg $ (fromSSM @PGConf) id
           let server = ServerConnectedToDB ec2IP
-              privateKeyLoc = (PrivateKeyLoc (baseConfig ^. sshConfig ^. sshPrivateKeyLoc))
+              sshConfig' = fromMaybe defaultSSHConfig $ baseConfig ^. sshConfig
+              privateKeyLoc = PrivateKeyLoc (sshConfig' ^. sshPrivateKeyLoc) -- TODO
               connectCmd = (getSSHCmd pgConf connectType server) privateKeyLoc
           s <- shelly connectCmd
           print s
@@ -69,7 +70,8 @@ modifyConfigWithFlags :: Flags -> BaseConfig -> BaseConfig
 modifyConfigWithFlags flgs baseConfig =
   BaseConfig
     { _awsProfile = fromMaybe (_awsProfile baseConfig) (_inputAwsProfile flgs),
-      _sshConfig = fromMaybe (_sshConfig baseConfig) (Just defaultSSHConfig)
+      _sshConfig = baseConfig ^. sshConfig,
+      _imageRepo = "fake repo" -- TODO
     }
 
 

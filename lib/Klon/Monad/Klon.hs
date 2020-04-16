@@ -15,12 +15,12 @@ import System.IO
 import Klon.Monad.AWS
 import RIO.Orphans
 
-type KlonM = RIO AppConfig
+type KlonM = RIO AppContext
 
 instance MonadAWS KlonM where
   liftAWS awsm = do
     env <- ask
     runAWS_IO (env ^. appAwsEnv) awsm
 
-runKlonM :: AppConfig -> KlonM a -> IO a
+runKlonM :: AppContext -> KlonM a -> IO a
 runKlonM cfg riok = runRIO cfg riok

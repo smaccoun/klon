@@ -11,7 +11,8 @@ data AppEnv = Production | Staging | Dev deriving (Generic, Show, Eq, Ord)
 data BaseConfig
   = BaseConfig
       { _awsProfile :: Text
-      , _sshConfig :: SSHConfig
+      , _sshConfig :: Maybe SSHConfig
+      , _imageRepo :: Text
       }
   deriving (Generic, Show)
 

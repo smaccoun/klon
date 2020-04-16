@@ -10,18 +10,20 @@ import qualified Network.AWS as Aws
 import Network.AWS.Auth (credFile)
 import RIO
 import System.IO
+import Dhall
+import Klon.Config.Config
 
-data AppConfig
-  = AppConfig
-      { _appAwsEnv :: !Aws.Env,
-        _appLogFunc :: !LogFunc,
-        _ecrConfig :: !RemoteImageConfig,
+data AppContext
+  = AppContext
+      { _appAwsEnv           :: !Aws.Env,
+        _appLogFunc          :: !LogFunc,
+        _remoteImageRepo     :: !RemoteImageConfig,
         _ecsDeploymentConfig :: Text
       }
   deriving (Generic)
   deriving anyclass (Show)
 
-makeLenses ''AppConfig
+makeLenses ''AppContext
 
 mkAwsConfig :: Text -> IO Aws.Env
 mkAwsConfig awsProfileName = do
@@ -32,28 +34,33 @@ mkAwsConfig awsProfileName = do
   let envWithLogger = awsEnv & envLogger .~ lgr
   return envWithLogger
 
-mkAppConfig :: Text -> IO AppConfig
-mkAppConfig awsProfileName = do
-  awsEnv' <- mkAwsConfig awsProfileName
+loadAppConfig :: MonadIO m => m BaseConfig
+loadAppConfig =
+  liftIO $ readDhall "./config.dhall"
+
+mkAppConfig :: IO AppContext
+mkAppConfig = do
+  baseConfig' <- loadAppConfig
+  awsEnv' <- mkAwsConfig (baseConfig' ^. awsProfile)
   logOptions' <- logOptionsHandle stderr False
   let logOptions = setLogUseTime True $ setLogUseLoc True logOptions'
   withLogFunc logOptions $ \logFunc -> do
     return $
-      AppConfig
+      AppContext
         { _appAwsEnv = awsEnv',
           _appLogFunc = logFunc,
-          _ecrConfig = RemoteImageConfig "fakeRepo" "fakeDeployment",
+          _remoteImageRepo = RemoteImageConfig (baseConfig' ^. imageRepo) "fakeDeployment",
           _ecsDeploymentConfig = "fakeDeployConfig"
         }
 
-instance Aws.HasEnv AppConfig where
+instance Aws.HasEnv AppContext where
   environment = lens _appAwsEnv (\x y -> x {_appAwsEnv = y})
 
-instance HasECR_Config AppConfig where
-  ecrRepoL = ecrConfig . repo
+instance HasECR_Config AppContext where
+  ecrRepoL = remoteImageRepo.repo
 
-instance HasECS_DeploymentConfig AppConfig where
+instance HasECS_DeploymentConfig AppContext where
   ecsDeployConfigL = lens _ecsDeploymentConfig (\x y -> x {_ecsDeploymentConfig = y})
 
-instance HasLogFunc AppConfig where
+instance HasLogFunc AppContext where
   logFuncL = lens _appLogFunc (\x y -> x {_appLogFunc = y})

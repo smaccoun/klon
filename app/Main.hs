@@ -14,5 +14,5 @@ main = do
 
 dre :: KlonM a -> IO a
 dre klm = do
-  cfg <- mkAppConfig "default"
+  cfg <- mkAppConfig
   runKlonM cfg klm
