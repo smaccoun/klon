@@ -3,7 +3,7 @@ module Klon.Cloud.Resources.AWS.ECR where
 import Data.Git.Monad
 import Data.List (sortBy)
 import Klon.Config.Types
-import Klon.Config.Config (ServiceSpec(..), remoteImageRepo)
+import Klon.Config.Config (ServiceSpec(..), remoteImageRepo, serviceName)
 import Lens.Micro ((.~))
 import Lens.Micro.TH
 import Network.AWS
@@ -12,6 +12,7 @@ import Network.AWS.ECR.DescribeImages
 import Network.AWS.ECR.Types (ImageDetail (..), idImageTags)
 import RIO
 import RIO.List (headMaybe)
+import RIO.List.Partial (head)
 
 class HasDockerImageRepo env where
   dockerImageRepoL :: Lens' env Text
@@ -57,3 +58,11 @@ imageForCurrentCommit repoName' = do
   case curCommit of
     (Just rsha1) -> getImageForCommit repoName' (tshow rsha1)
     Nothing -> return Nothing
+
+anyServiceImageForCurrentCommit :: (MonadAWS m, GitMonad m, MonadReader env m, HasServiceSpecs env) => m (Maybe ImageDetail)
+anyServiceImageForCurrentCommit = do
+  services <- view serviceSpecsL
+  let firstService = head services
+  imageForCurrentCommit (firstService ^. serviceName)
+
+
