@@ -8,6 +8,7 @@ import Network.AWS
 import qualified Network.AWS as Aws
 import Network.AWS.Auth (credFile)
 import RIO
+import RIO.List
 import System.IO
 import RIO.Orphans
 import Klon.Config.Types

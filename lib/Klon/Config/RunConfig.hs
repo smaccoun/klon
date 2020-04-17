@@ -39,18 +39,12 @@ mkAppConfig = do
       AppContext
         { _appAwsEnv = awsEnv',
           _appLogFunc = logFunc,
-          _remoteImageRepo = RemoteImageConfig (baseConfig' ^. imageRepo) "fakeDeployment",
+          _appServices = baseConfig' ^. serviceSpecs,
           _ecsDeploymentConfig = "fakeDeployConfig"
         }
 
 instance Aws.HasEnv AppContext where
   environment = lens _appAwsEnv (\x y -> x {_appAwsEnv = y})
-
-instance HasECR_Config AppContext where
-  ecrRepoL = remoteImageRepo.repo
-
-instance HasECS_DeploymentConfig AppContext where
-  ecsDeployConfigL = lens _ecsDeploymentConfig (\x y -> x {_ecsDeploymentConfig = y})
 
 instance HasLogFunc AppContext where
   logFuncL = lens _appLogFunc (\x y -> x {_appLogFunc = y})

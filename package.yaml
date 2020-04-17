@@ -50,6 +50,7 @@ dependencies:
 - exceptions
 - freer-simple
 - rio-orphans
+- containers
 
 default-extensions:
   - ConstraintKinds

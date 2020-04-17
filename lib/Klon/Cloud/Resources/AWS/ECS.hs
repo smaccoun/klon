@@ -28,7 +28,6 @@ import System.IO
 --     whenHasMatchingSecurityGroup ec2Instances' (dbi, dEC2_SGs) =
 --       Prelude.filter (\ec2SG -> ec2SG `elem` dEC2_SGs) ec2Instances'
 
-
 getEC2_InstancesInCluster :: MonadAWS m => [Text] -> m [Instance]
 getEC2_InstancesInCluster containerInstanceIDs = do
   matchingEC2InstancesResp <- send $ describeInstances & diiInstanceIds .~ containerInstanceIDs

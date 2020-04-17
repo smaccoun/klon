@@ -8,13 +8,23 @@ import Dhall
 
 data AppEnv = Production | Staging | Dev deriving (Generic, Show, Eq, Ord)
 
+data ServiceSpec =
+  ServiceSpec 
+    {_serviceName :: Text
+    ,_remoteImageRepo :: Text
+    }
+    deriving (Generic, Show)
+
+makeLenses ''ServiceSpec
+
 data BaseConfig
   = BaseConfig
-      { _awsProfile :: Text
-      , _sshConfig :: Maybe SSHConfig
-      , _imageRepo :: Text
+      { _awsProfile   :: Text
+      , _sshConfig    :: Maybe SSHConfig
+      , _serviceSpecs :: [ServiceSpec]
       }
   deriving (Generic, Show)
+
 
 data SSHConfig
   = SSHConfig
@@ -33,7 +43,6 @@ defaultSSHConfig = SSHConfig
   }
 
 makeLenses ''BaseConfig
-
 makeLenses ''SSHConfig
 
 {- DHALL -}
@@ -47,3 +56,4 @@ instance FromDhall BaseConfig
 instance FromDhall PrivateKeyLoc
 instance FromDhall PortToConnect
 instance FromDhall SSHConfig
+instance FromDhall ServiceSpec

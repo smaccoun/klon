@@ -10,20 +10,13 @@ import RIO
 import System.IO
 import Dhall
 import Klon.Config.Config
-
-data RemoteImageConfig =
-  RemoteImageConfig
-    {_repo :: Text
-    ,_deploymentConfig :: Text
-    } deriving (Generic)
-
-makeLenses ''RemoteImageConfig
+import RIO.List
 
 data AppContext
   = AppContext
       { _appAwsEnv           :: !Aws.Env,
         _appLogFunc          :: !LogFunc,
-        _remoteImageRepo     :: !RemoteImageConfig,
+        _appServices         :: ![ServiceSpec],
         _ecsDeploymentConfig :: Text
       }
   deriving (Generic)
@@ -31,3 +24,27 @@ data AppContext
 
 makeLenses ''AppContext
 
+class HasServiceSpecs a where
+   serviceSpecsL :: Lens' a [ServiceSpec]
+
+instance HasServiceSpecs AppContext where
+  serviceSpecsL = appServices
+
+-- instance HasServiceSpecs AppContext where
+--   serviceSpecsL = appServices
+
+class Monad m => WithService m where
+  forService :: Text -> m ServiceSpec
+
+instance (Monad m, MonadReader env m, HasServiceSpecs env) => WithService m where
+  forService serviceName' = do
+    services <- view serviceSpecsL
+    let matchService s = s ^. serviceName == serviceName'
+        mbMatch = RIO.List.find matchService services
+    return $ fromMaybe (error "assumed matched service") mbMatch
+
+class HasECS_DeploymentConfig env where
+  ecsDeployConfigL :: Lens' env Text
+
+instance HasECS_DeploymentConfig AppContext where
+  ecsDeployConfigL = ecsDeploymentConfig

@@ -1,61 +1,59 @@
 module Klon.Cloud.Resources.AWS.ECR where
 
-import RIO
-import RIO.List (headMaybe)
+import Data.Git.Monad
+import Data.List (sortBy)
+import Klon.Config.Types
+import Klon.Config.Config (ServiceSpec(..), remoteImageRepo)
+import Lens.Micro ((.~))
+import Lens.Micro.TH
 import Network.AWS
 import qualified Network.AWS as Aws
 import Network.AWS.ECR.DescribeImages
-import Data.List (sortBy)
-import Lens.Micro ((.~))
-import Lens.Micro.TH
-import Network.AWS.ECR.Types (ImageDetail(..), idImageTags)
-import Klon.Config.Types
-import Data.Git.Monad
+import Network.AWS.ECR.Types (ImageDetail (..), idImageTags)
+import RIO
+import RIO.List (headMaybe)
 
 class HasDockerImageRepo env where
   dockerImageRepoL :: Lens' env Text
 
-class HasECR_Config env where
-  ecrRepoL :: Lens' env Text
+class HasECR_Repo env where
+  ecrRepoUriL :: Lens' env Text
 
-instance (HasECR_Config a) => HasDockerImageRepo a where
-  dockerImageRepoL = ecrRepoL
+instance (HasECR_Repo a) => HasDockerImageRepo a where
+  dockerImageRepoL = ecrRepoUriL
+
+instance HasECR_Repo ServiceSpec where
+  ecrRepoUriL = remoteImageRepo
 
 dockerImageLoc = undefined
+
 pullImage = undefined
+
 deployImage = undefined
 
-
-instance HasECR_Config RemoteImageConfig where
-  ecrRepoL = repo
-
-
-getLastNStoredImages :: (MonadAWS m, MonadReader env m, HasECR_Config env) => Int -> m [ImageDetail]
-getLastNStoredImages numImages = do
-  repo' <- view ecrRepoL
-  allImgs <- fetchImages repo'
+getLastNStoredImages :: (MonadAWS m, WithService m) => Text -> Int -> m [ImageDetail]
+getLastNStoredImages serviceName numImages = do
+  service <- forService serviceName
+  allImgs <- fetchImages (service ^. remoteImageRepo)
   return (allImgs ^. dirsImageDetails)
   where
     fetchImages repo' =
-      Aws.send $ 
+      Aws.send $
         describeImages repo'
-        & (diMaxResults .~ Just (fromIntegral numImages))
+          & (diMaxResults .~ Just (fromIntegral numImages))
 
-getImageForCommit :: (MonadAWS m, MonadReader env m, HasECR_Config env) => Text -> m (Maybe ImageDetail)
-getImageForCommit tag'= do
-  mostRecentImgs <- getLastNStoredImages 100
+getImageForCommit :: (MonadAWS m, WithService m) => Text -> Text -> m (Maybe ImageDetail)
+getImageForCommit serviceName' tag' = do
+  mostRecentImgs <- getLastNStoredImages serviceName' 100
   return $ headMaybe $ mostRecentImgs `whereHasTag` tag'
   where
     whereHasTag :: [ImageDetail] -> Text -> [ImageDetail]
-    whereHasTag imgs tagToMatch = 
+    whereHasTag imgs tagToMatch =
       filter (\img -> tagToMatch `elem` (img ^. idImageTags)) imgs
 
-imageForCurrentCommit :: (MonadAWS m, GitMonad m, MonadReader env m, HasECR_Config env) => m (Maybe ImageDetail)
-imageForCurrentCommit = do
+imageForCurrentCommit :: (MonadAWS m, GitMonad m, WithService m) => Text -> m (Maybe ImageDetail)
+imageForCurrentCommit repoName' = do
   curCommit <- headResolv
   case curCommit of
-    (Just rsha1) -> getImageForCommit (tshow rsha1)
+    (Just rsha1) -> getImageForCommit repoName' (tshow rsha1)
     Nothing -> return Nothing
-
-      
-

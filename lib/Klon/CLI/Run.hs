@@ -71,7 +71,7 @@ modifyConfigWithFlags flgs baseConfig =
   BaseConfig
     { _awsProfile = fromMaybe (_awsProfile baseConfig) (_inputAwsProfile flgs),
       _sshConfig = baseConfig ^. sshConfig,
-      _imageRepo = "fake repo" -- TODO
+      _serviceSpecs = [] -- TODO
     }
 
 

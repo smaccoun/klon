@@ -17,7 +17,7 @@ runAWS_IO awsEnv cmd' =
   where
     lgr = awsEnv ^. Aws.envLogger
 
-runAWS_RIO :: (Aws.HasEnv env, HasECR_Config env, MonadUnliftIO m, MonadReader env m) => Aws.AWS a -> m a
+runAWS_RIO :: (Aws.HasEnv env, MonadUnliftIO m, MonadReader env m) => Aws.AWS a -> m a
 runAWS_RIO cmd' = do
   awsEnv' <- view Aws.environment
   runAWS_IO awsEnv' cmd'
