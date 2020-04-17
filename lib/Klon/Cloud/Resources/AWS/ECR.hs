@@ -10,6 +10,7 @@ import Lens.Micro ((.~))
 import Lens.Micro.TH
 import Network.AWS.ECR.Types (ImageDetail(..), idImageTags)
 import Klon.Config.Types
+import Data.Git.Monad
 
 class HasDockerImageRepo env where
   dockerImageRepoL :: Lens' env Text
@@ -48,5 +49,13 @@ getImageForCommit tag'= do
     whereHasTag :: [ImageDetail] -> Text -> [ImageDetail]
     whereHasTag imgs tagToMatch = 
       filter (\img -> tagToMatch `elem` (img ^. idImageTags)) imgs
+
+imageForCurrentCommit :: (MonadAWS m, GitMonad m, MonadReader env m, HasECR_Config env) => m (Maybe ImageDetail)
+imageForCurrentCommit = do
+  curCommit <- headResolv
+  case curCommit of
+    (Just rsha1) -> getImageForCommit (tshow rsha1)
+    Nothing -> return Nothing
+
       
 
