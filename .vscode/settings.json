@@ -1,0 +1,7 @@
+{
+  "files.exclude": {
+    "**/.stack-work": true,
+    "**/*.dump-hi": true,
+    "**/dist-newstyle": true
+  }
+}
