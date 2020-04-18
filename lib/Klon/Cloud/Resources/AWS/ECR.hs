@@ -3,7 +3,6 @@ module Klon.Cloud.Resources.AWS.ECR where
 import Data.Git.Monad
 import Data.List (sortBy)
 import Klon.Config.Types
-import Klon.Config.Config (ServiceSpec(..), remoteImageRepo, serviceName)
 import Lens.Micro ((.~))
 import Lens.Micro.TH
 import Network.AWS

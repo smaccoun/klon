@@ -12,8 +12,6 @@ import RIO
 import System.IO
 import Dhall
 import Klon.Config.Types
-import Klon.Config.Config
-
 
 mkAwsConfig :: Text -> IO Aws.Env
 mkAwsConfig awsProfileName = do
@@ -43,8 +41,6 @@ mkAppConfig = do
           _ecsDeploymentConfig = "fakeDeployConfig"
         }
 
-instance Aws.HasEnv AppContext where
-  environment = lens _appAwsEnv (\x y -> x {_appAwsEnv = y})
-
-instance HasLogFunc AppContext where
-  logFuncL = lens _appLogFunc (\x y -> x {_appLogFunc = y})
+readDhall :: Text -> IO BaseConfig
+readDhall fp = 
+  input auto fp

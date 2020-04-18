@@ -1,4 +1,4 @@
-module Klon.Config.Config where
+module Klon.Config.Types.Config where
 
 import Data.Functor.Identity (Identity (..))
 import Data.Text
@@ -34,10 +34,6 @@ makeLenses ''BaseConfig
 makeLenses ''SSHConfig
 
 {- DHALL -}
-
-readDhall :: Text -> IO BaseConfig
-readDhall fp = 
-  input auto fp 
 
 instance FromDhall AppEnv
 instance FromDhall PrivateKeyLoc
