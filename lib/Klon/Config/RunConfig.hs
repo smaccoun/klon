@@ -24,7 +24,7 @@ mkAwsConfig awsProfileName = do
 
 loadAppConfig :: MonadIO m => m BaseConfig
 loadAppConfig =
-  liftIO $ readDhall "./config.dhall"
+  liftIO $ readDhall "./dhall/config.dhall"
 
 mkAppConfig :: IO AppContext
 mkAppConfig = do

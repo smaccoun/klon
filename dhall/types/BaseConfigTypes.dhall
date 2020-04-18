@@ -1,8 +1,8 @@
-let SSHConfig =       
+let SSHConfig: Type =       
       { _sshPrivateKeyLoc : Text
       , _portForwardLocalPort : Integer
       }
-let ServiceSpec =
+let ServiceSpec: Type =
     {_serviceName : Text
     ,_remoteImageRepo : Text
     } 
