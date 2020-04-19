@@ -26,34 +26,34 @@ import GHC.Generics
 runCLI :: IO ()
 runCLI = do
   mbArgs <- captureArgs
-  baseConfig <- readDhall "./dhall/cloudConnect.dhall"
-  putStrLn $ show baseConfig
-  bootProg mbArgs baseConfig
+--  baseConfig <- readDhall "./dhall/cloudConnect.dhall"
+--  putStrLn $ show baseConfig
+  bootProg mbArgs
 
-bootProg :: Maybe Args -> BaseConfig -> IO ()
-bootProg mbArgs baseConfig = do
-  awsCfg <- mkAwsConfig $ _awsProfile baseConfig
-  rdsInfo <- runAWS_IO awsCfg $ allInstanceInfo
+bootProg :: Maybe Args -> IO ()
+bootProg mbArgs = do
+  -- awsCfg <- mkAwsConfig $ _awsProfile baseConfig
+  -- rdsInfo <- runAWS_IO awsCfg $ allInstanceInfo
   context <- mkAppContext
   case mbArgs of
     Nothing -> do
       inputConfig <- bootTUI
       print $ show inputConfig
       return ()
-    Just (Args cmd flgs) -> do
-      let modifiedConfig = modifyConfigWithFlags flgs baseConfig
-          awsProf = _awsProfile modifiedConfig
+    Just (Args cmd flgs) -> runKlonM context $ do
       case cmd of
-        Connect (ConnectionCmd connectType appEnv') -> do
-          ec2IP <- runAWS_IO awsCfg $ getAnEC2InstancePublicIP (mapClusterName appEnv')
-          Just pgConf <- runAWS_IO awsCfg $ (fromSSM @PGConf) id
-          let server = ServerConnectedToDB ec2IP
-              sshConfig' = fromMaybe defaultSSHConfig $ baseConfig ^. sshConfig
-              privateKeyLoc = PrivateKeyLoc (sshConfig' ^. sshPrivateKeyLoc) -- TODO
-              connectCmd = (getSSHCmd pgConf connectType server) privateKeyLoc
-          s <- shelly connectCmd
-          print s
-        QueryState RemoteImageInfo -> runKlonM context queryImages
+        Connect (ConnectionCmd connectType appEnv') -> undefined -- TODO
+          -- let modifiedConfig = modifyConfigWithFlags flgs baseConfig
+          --     awsProf = _awsProfile modifiedConfig
+          -- ec2IP <- getAnEC2InstancePublicIP (mapClusterName appEnv')
+          -- Just pgConf <- runAWS_IO awsCfg $ (fromSSM @PGConf) id
+          -- let server = ServerConnectedToDB ec2IP
+          --     sshConfig' = fromMaybe defaultSSHConfig $ baseConfig ^. sshConfig
+          --     privateKeyLoc = PrivateKeyLoc (sshConfig' ^. sshPrivateKeyLoc) -- TODO
+          --     connectCmd = (getSSHCmd pgConf connectType server) privateKeyLoc
+          -- s <- shelly connectCmd
+          -- print s
+        QueryState RemoteImageInfo -> queryImages
   where
     mapClusterName env' = ContainerCluster $
       case env' of

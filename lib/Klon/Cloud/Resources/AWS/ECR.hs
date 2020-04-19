@@ -8,7 +8,7 @@ import Lens.Micro.TH
 import Network.AWS
 import qualified Network.AWS as Aws
 import Network.AWS.ECR.DescribeImages
-import Network.AWS.ECR.Types (ImageDetail (..), idImageTags)
+import Network.AWS.ECR.Types (ImageDetail (..), idImageTags, idImagePushedAt, iiImageTag, imageIdentifier)
 import RIO
 import RIO.List (headMaybe)
 import RIO.List.Partial (head)
@@ -37,19 +37,22 @@ getLastNStoredImages serviceName numImages = do
   allImgs <- fetchImages (service ^. remoteImageRepo)
   return (allImgs ^. dirsImageDetails)
   where
-    fetchImages repo' =
+    fetchImages repo' = 
       Aws.send $
         describeImages repo'
           & (diMaxResults .~ Just (fromIntegral numImages))
 
 getImageForCommit :: (MonadAWS m, WithService m) => Text -> Text -> m (Maybe ImageDetail)
-getImageForCommit serviceName' tag' = do
-  mostRecentImgs <- getLastNStoredImages serviceName' 100
-  return $ headMaybe $ mostRecentImgs `whereHasTag` tag'
+getImageForCommit repo' tag' = do
+  matchedImgResp <- fetchByImageTag
+  return $ headMaybe $ matchedImgResp ^. dirsImageDetails
   where
-    whereHasTag :: [ImageDetail] -> Text -> [ImageDetail]
-    whereHasTag imgs tagToMatch =
-      filter (\img -> tagToMatch `elem` (img ^. idImageTags)) imgs
+    imageTagId = imageIdentifier & iiImageTag .~ (Just tag')
+    fetchByImageTag =
+      Aws.send $
+        describeImages repo'
+          & (diImageIds .~ [imageTagId])
+
 
 imageForCurrentCommit :: (MonadAWS m, GitMonad m, WithService m) => Text -> m (Maybe ImageDetail)
 imageForCurrentCommit repoName' = do
@@ -61,7 +64,8 @@ imageForCurrentCommit repoName' = do
 anyServiceImageForCurrentCommit :: (MonadAWS m, GitMonad m, MonadReader env m, HasServiceSpecs env) => m (Maybe ImageDetail)
 anyServiceImageForCurrentCommit = do
   services <- view serviceSpecsL
+  liftIO $ print $ "services " <> show services
   let firstService = head services
-  imageForCurrentCommit (firstService ^. serviceName)
+  imageForCurrentCommit (firstService ^. remoteImageRepo)
 
 
