@@ -26,8 +26,8 @@ loadAppConfig :: MonadIO m => m BaseConfig
 loadAppConfig =
   liftIO $ readDhall "./dhall/config.dhall"
 
-mkAppConfig :: IO AppContext
-mkAppConfig = do
+mkAppContext :: IO AppContext
+mkAppContext = do
   baseConfig' <- loadAppConfig
   awsEnv' <- mkAwsConfig (baseConfig' ^. awsProfile)
   logOptions' <- logOptionsHandle stderr False

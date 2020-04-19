@@ -8,13 +8,16 @@ import Klon.Cloud.Resources.AWS.SSM
 import Klon.Cloud.Resources.Types
 import Klon.Command.Connect
 import Klon.Config.Types
-import Klon.Config.RunConfig (mkAwsConfig, readDhall)
+import Klon
+import Klon.Config.RunConfig (mkAwsConfig, readDhall, mkAppContext)
+import Klon.Command.Query
 import Klon.TUI.TUI (bootTUI)
 import Lens.Micro
 import Lib
 import Shelly
 import Data.Proxy
 import Klon.Monad.AWS
+import Klon.Prelude
 import Klon.Cloud.Resources.AWS.RDS
 import Data.Aeson
 import Data.Text (Text)
@@ -31,6 +34,7 @@ bootProg :: Maybe Args -> BaseConfig -> IO ()
 bootProg mbArgs baseConfig = do
   awsCfg <- mkAwsConfig $ _awsProfile baseConfig
   rdsInfo <- runAWS_IO awsCfg $ allInstanceInfo
+  context <- mkAppContext
   case mbArgs of
     Nothing -> do
       inputConfig <- bootTUI
@@ -49,6 +53,7 @@ bootProg mbArgs baseConfig = do
               connectCmd = (getSSHCmd pgConf connectType server) privateKeyLoc
           s <- shelly connectCmd
           print s
+        QueryState RemoteImageInfo -> runKlonM context queryImages
   where
     mapClusterName env' = ContainerCluster $
       case env' of

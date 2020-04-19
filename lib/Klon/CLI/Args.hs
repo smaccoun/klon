@@ -3,11 +3,13 @@ module Klon.CLI.Args where
 import Data.Text (Text)
 import GHC.Generics
 import Klon.Command.Connect (ConnectionType (..))
+import Klon.Command.Query (querySubCmdParser, QueryCmd(..))
 import Options.Applicative
 import Klon.Config (AppEnv(..))
 
 data Command = 
-  Connect ConnectionCmd
+    Connect ConnectionCmd
+  | QueryState QueryCmd
 
 data ConnectionCmd = ConnectionCmd ConnectionType AppEnv
 
@@ -36,7 +38,18 @@ fullParser = optional $
 
 cmdParser :: Parser Command
 cmdParser =
-  Connect <$> connectCmdParser
+  (Connect <$> connectCmdParser)
+  <|> 
+  (QueryState <$> queryStateParser)
+
+
+queryStateParser :: Parser QueryCmd
+queryStateParser =
+  subparser $ command "query" queryParseInfo
+  where
+    queryParseInfo = 
+      info (querySubCmdParser <**> helper) idm
+
 
 connectCmdParser :: Parser ConnectionCmd
 connectCmdParser = ConnectionCmd <$>
