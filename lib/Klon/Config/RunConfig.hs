@@ -1,8 +1,10 @@
 module Klon.Config.RunConfig where
 
 import Data.Text hiding (head)
+import Dhall
 import Klon.Cloud.Resources.AWS.ECR
 import Klon.Command.Deploy
+import Klon.Config.Types
 import Lens.Micro
 import Lens.Micro.TH
 import Network.AWS
@@ -10,8 +12,6 @@ import qualified Network.AWS as Aws
 import Network.AWS.Auth (credFile)
 import RIO
 import System.IO
-import Dhall
-import Klon.Config.Types
 
 mkAwsConfig :: Text -> IO Aws.Env
 mkAwsConfig awsProfileName = do
@@ -38,9 +38,10 @@ mkAppContext = do
         { _appAwsEnv = awsEnv',
           _appLogFunc = logFunc,
           _appServices = baseConfig' ^. serviceSpecs,
+          _appBaseConfig = baseConfig',
           _ecsDeploymentConfig = "fakeDeployConfig"
         }
 
 readDhall :: Text -> IO BaseConfig
-readDhall fp = 
+readDhall fp =
   input auto fp

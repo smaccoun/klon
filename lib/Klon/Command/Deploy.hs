@@ -35,10 +35,8 @@ runDeployCmd cmd = case cmd of
     case mbImageExists of
       Just img -> do
         dhallCmd <- view (baseConfigL . mkServiceSpecCmd)
-        let dhallCmd = DhallMakeComposeCmd $ "./compose.dhall ((../config.dhall).knownStagingEnv)"
-            tag' = (head $ img ^. idImageTags)
-        cf <- writeComposeFile Nothing dhallCmd tag'
-        liftIO $ print cf
+        let tag' = (head $ img ^. idImageTags)
+        writeComposeFile Nothing (DhallMakeComposeCmd dhallCmd) tag'
       Nothing ->
         liftIO $ print "No image has been pushed for the current commit"
 

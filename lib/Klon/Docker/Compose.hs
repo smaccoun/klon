@@ -5,6 +5,7 @@ import Dhall.TH
 import qualified Dhall.Yaml as DYaml
 import Klon.Prelude
 import RIO
+import RIO.File (writeBinaryFile)
 
 -- Dhall.TH.makeHaskellTypes
 --   [ MultipleConstructors "StringOrNumber" "(./dhall/types/DockerComposeV3.dhall).StringOrNumber"
@@ -19,7 +20,8 @@ Dhall.TH.makeHaskellTypes
 
 newtype DhallMakeComposeCmd = DhallMakeComposeCmd Text
 
-writeComposeFile :: Maybe FilePath -> DhallMakeComposeCmd -> Text -> KlonM ByteString
+writeComposeFile :: Maybe FilePath -> DhallMakeComposeCmd -> Text -> KlonM ()
 writeComposeFile mbPath (DhallMakeComposeCmd dhallCmd) tag' =
-  liftIO $
-    DYaml.dhallToYaml DYaml.defaultOptions mbPath (dhallCmd <> " " <> tag')
+  liftIO $ do
+    asBS <- DYaml.dhallToYaml DYaml.defaultOptions mbPath (dhallCmd <> " " <> "\"" <> tag' <> "\"")
+    writeBinaryFile "./dc.yml" asBS
