@@ -34,6 +34,7 @@ runDeployCmd cmd = case cmd of
     mbImageExists <- anyServiceImageForCurrentCommit
     case mbImageExists of
       Just img -> do
+        dhallCmd <- view (baseConfigL . mkServiceSpecCmd)
         let dhallCmd = DhallMakeComposeCmd $ "./compose.dhall ((../config.dhall).knownStagingEnv)"
             tag' = (head $ img ^. idImageTags)
         cf <- writeComposeFile Nothing dhallCmd tag'

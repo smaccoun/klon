@@ -79,6 +79,7 @@ modifyConfigWithFlags flgs baseConfig =
   BaseConfig
     { _awsProfile = fromMaybe (_awsProfile baseConfig) (_inputAwsProfile flgs),
       _sshConfig = baseConfig ^. sshConfig,
+      _mkServiceSpecCmd = baseConfig ^. mkServiceSpecCmd,
       _serviceSpecs = [] -- TODO
     }
 

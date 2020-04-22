@@ -10,6 +10,7 @@ in let BaseConfig: Type =
       { _awsProfile : Text
       , _sshConfig : Optional SSHConfig
       , _serviceSpecs: List ServiceSpec
+      , _mkServiceSpecCmd : Text
       } 
 in {SSHConfig = SSHConfig
    ,BaseConfig = BaseConfig
