@@ -2,32 +2,34 @@
 
 module Klon.CLI.Run where
 
+import Data.Aeson
 import Data.Maybe (fromMaybe)
+import Data.Proxy
+import Data.Text (Text)
+import GHC.Generics
+import Klon
 import Klon.Cloud.Resources.AWS.ECS
+import Klon.Cloud.Resources.AWS.RDS
 import Klon.Cloud.Resources.AWS.SSM
 import Klon.Cloud.Resources.Types
 import Klon.Command.Connect
-import Klon.Config.Types
-import Klon
-import Klon.Config.RunConfig (mkAwsConfig, readDhall, mkAppContext)
+import Klon.Command.Deploy
 import Klon.Command.Query
+import Klon.Config.RunConfig (mkAppContext, mkAwsConfig, readDhall)
+import Klon.Config.Types
+import Klon.Docker.Compose (writeComposeFile)
+import Klon.Monad.AWS
+import Klon.Prelude
 import Klon.TUI.TUI (bootTUI)
 import Lens.Micro
 import Lib
 import Shelly
-import Data.Proxy
-import Klon.Monad.AWS
-import Klon.Prelude
-import Klon.Cloud.Resources.AWS.RDS
-import Data.Aeson
-import Data.Text (Text)
-import GHC.Generics
 
 runCLI :: IO ()
 runCLI = do
   mbArgs <- captureArgs
---  baseConfig <- readDhall "./dhall/cloudConnect.dhall"
---  putStrLn $ show baseConfig
+  --  baseConfig <- readDhall "./dhall/cloudConnect.dhall"
+  --  putStrLn $ show baseConfig
   bootProg mbArgs
 
 bootProg :: Maybe Args -> IO ()
@@ -54,6 +56,7 @@ bootProg mbArgs = do
           -- s <- shelly connectCmd
           -- print s
         QueryState RemoteImageInfo -> queryImages
+        DeployCmd subCmd -> runDeployCmd subCmd
   where
     mapClusterName env' = ContainerCluster $
       case env' of
@@ -65,11 +68,11 @@ bootProg mbArgs = do
         Tunnel -> tunnelCmd (portFowardStr pgConf) server
 
 portFowardStr :: PGConf -> TunnelForwardStr
-portFowardStr PGConf{..} = 
+portFowardStr PGConf {..} =
   let localPort = PortToConnect 8888
       dbPort = DBPort pgPort
       dbUrl = DatabaseURL pgHost
-  in tunnelForwardArg dbUrl dbPort localPort
+   in tunnelForwardArg dbUrl dbPort localPort
 
 modifyConfigWithFlags :: Flags -> BaseConfig -> BaseConfig
 modifyConfigWithFlags flgs baseConfig =
@@ -78,7 +81,6 @@ modifyConfigWithFlags flgs baseConfig =
       _sshConfig = baseConfig ^. sshConfig,
       _serviceSpecs = [] -- TODO
     }
-
 
 data PGConf
   = PGConf

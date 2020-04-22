@@ -64,7 +64,6 @@ imageForCurrentCommit repoName' = do
 anyServiceImageForCurrentCommit :: (MonadAWS m, GitMonad m, MonadReader env m, HasServiceSpecs env) => m (Maybe ImageDetail)
 anyServiceImageForCurrentCommit = do
   services <- view serviceSpecsL
-  liftIO $ print $ "services " <> show services
   let firstService = head services
   imageForCurrentCommit (firstService ^. remoteImageRepo)
 

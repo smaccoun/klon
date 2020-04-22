@@ -1,23 +1,51 @@
 module Klon.Command.Deploy where
 
+import Data.Git.Monad
 import Data.List (sortBy)
 import Klon.Cloud.Resources.AWS.ECR
-import Klon.Monad.Klon
 import Klon.Config.Types
+import Klon.Docker.Compose
+import Klon.Monad.Klon
 import Lens.Micro ((.~))
 import Lens.Micro.TH
 import Network.AWS
 import qualified Network.AWS as Aws
 import Network.AWS.ECR.DescribeImages
-import Network.AWS.ECR.Types (ImageDetail)
+import Network.AWS.ECR.Types (ImageDetail (..), idImageTags)
+import Options.Applicative
 import RIO
 
 data DeployOptions = LastPushedImage
 
-deploy :: DeployOptions ->
+data DeploySubCmd = UpdateServiceCmd | MkSpecFileCmd
+
+parseDeployCmd :: Parser DeploySubCmd
+parseDeployCmd = subparser $ updateServiceCmd <> mkSpecFileCmd
+  where
+    updateServiceCmd =
+      command "updateService" (info (pure UpdateServiceCmd) (progDesc "Rolling ECR deployment"))
+    mkSpecFileCmd =
+      command "mkSpec" (info (pure MkSpecFileCmd) (progDesc "Intermediate cmd. Write the compose file required for deployment"))
+
+runDeployCmd :: DeploySubCmd -> KlonM ()
+runDeployCmd cmd = case cmd of
+  UpdateServiceCmd -> undefined
+  MkSpecFileCmd -> do
+    mbImageExists <- anyServiceImageForCurrentCommit
+    case mbImageExists of
+      Just img -> do
+        let dhallCmd = DhallMakeComposeCmd $ "./compose.dhall ((../config.dhall).knownStagingEnv)"
+            tag' = (head $ img ^. idImageTags)
+        cf <- writeComposeFile Nothing dhallCmd tag'
+        liftIO $ print cf
+      Nothing ->
+        liftIO $ print "No image has been pushed for the current commit"
+
+deploy ::
+  DeployOptions ->
   KlonM ()
 deploy options = do
   env' <- ask
-  img <- imageForCurrentCommit "app" 
+  img <- imageForCurrentCommit "app"
   image' <- pullImage img
   deployImage (env' ^. ecsDeployConfigL) image'
