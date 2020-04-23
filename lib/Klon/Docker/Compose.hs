@@ -1,5 +1,6 @@
 module Klon.Docker.Compose where
 
+import qualified Dhall.DhallToYaml.Main
 import Dhall.Map (Map (..))
 import Dhall.TH
 import qualified Dhall.Yaml as DYaml
@@ -25,3 +26,5 @@ writeComposeFile mbPath (DhallMakeComposeCmd dhallCmd) tag' =
   liftIO $ do
     asBS <- DYaml.dhallToYaml DYaml.defaultOptions mbPath (dhallCmd <> " " <> "\"" <> tag' <> "\"")
     writeBinaryFile "./dc.yml" asBS
+  where
+    options = DYaml.defaultOptions {DYaml.quoted = False}

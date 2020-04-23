@@ -5,6 +5,8 @@ let SSHConfig: Type =
 let ServiceSpec: Type =
     {_serviceName : Text
     ,_remoteImageRepo : Text
+    ,_clusterName : Text
+    ,_taskProjectName : Text
     } 
 in let BaseConfig: Type =       
       { _awsProfile : Text
