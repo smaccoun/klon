@@ -13,6 +13,7 @@ in let BaseConfig: Type =
       , _sshConfig : Optional SSHConfig
       , _serviceSpecs: List ServiceSpec
       , _mkServiceSpecCmd : Text
+      , _runMigrationCmd : Text
       } 
 in {SSHConfig = SSHConfig
    ,BaseConfig = BaseConfig

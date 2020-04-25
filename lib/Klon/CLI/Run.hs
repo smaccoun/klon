@@ -76,11 +76,8 @@ portFowardStr PGConf {..} =
 
 modifyConfigWithFlags :: Flags -> BaseConfig -> BaseConfig
 modifyConfigWithFlags flgs baseConfig =
-  BaseConfig
-    { _awsProfile = fromMaybe (_awsProfile baseConfig) (_inputAwsProfile flgs),
-      _sshConfig = baseConfig ^. sshConfig,
-      _mkServiceSpecCmd = baseConfig ^. mkServiceSpecCmd,
-      _serviceSpecs = [] -- TODO
+  baseConfig
+    { _awsProfile = fromMaybe (_awsProfile baseConfig) (_inputAwsProfile flgs)
     }
 
 data PGConf

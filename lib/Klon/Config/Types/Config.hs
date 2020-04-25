@@ -19,9 +19,13 @@ deriving instance Show ServiceSpec
 
 deriving instance Show BaseConfig
 
-data AppEnv = Production | Staging | Dev deriving (Generic, Show, Eq, Ord)
-
 makeLenses ''ServiceSpec
+
+makeLenses ''BaseConfig
+
+makeLenses ''SSHConfig
+
+data AppEnv = Production | Staging | Dev deriving (Generic, Show, Eq, Ord)
 
 newtype PrivateKeyLoc = PrivateKeyLoc {f_PrivateKeyLoc :: Text} deriving (Generic, Show)
 
@@ -32,10 +36,6 @@ defaultSSHConfig = SSHConfig
   { _sshPrivateKeyLoc = "~/.ssh/id_rsa",
     _portForwardLocalPort = 8888
   }
-
-makeLenses ''BaseConfig
-
-makeLenses ''SSHConfig
 
 {- DHALL -}
 
