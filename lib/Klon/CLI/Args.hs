@@ -3,6 +3,7 @@ module Klon.CLI.Args where
 import Data.Text (Text)
 import GHC.Generics
 import Klon.Command.Connect (ConnectionType (..))
+import Klon.Command.DBMigration (DBMigrateSubCmd (..), parseDBMigrateSubCmd)
 import Klon.Command.Deploy (DeploySubCmd (..), parseDeployCmd)
 import Klon.Command.Query (QueryCmd (..), querySubCmdParser)
 import Klon.Config (AppEnv (..))
@@ -12,6 +13,7 @@ data Command
   = Connect ConnectionCmd
   | QueryState QueryCmd
   | DeployCmd DeploySubCmd
+  | DBMigrateCmd DBMigrateSubCmd
 
 data ConnectionCmd = ConnectionCmd ConnectionType AppEnv
 
@@ -44,6 +46,7 @@ cmdParser =
   (Connect <$> connectCmdParser)
     <|> (QueryState <$> queryStateParser)
     <|> (DeployCmd <$> parseDeployCmd)
+    <|> (DBMigrateCmd <$> parseDBMigrateSubCmd)
 
 queryStateParser :: Parser QueryCmd
 queryStateParser =

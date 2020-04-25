@@ -13,6 +13,7 @@ import Klon.Cloud.Resources.AWS.RDS
 import Klon.Cloud.Resources.AWS.SSM
 import Klon.Cloud.Resources.Types
 import Klon.Command.Connect
+import Klon.Command.DBMigration
 import Klon.Command.Deploy
 import Klon.Command.Query
 import Klon.Config.RunConfig (mkAppContext, mkAwsConfig, readDhall)
@@ -57,6 +58,9 @@ bootProg mbArgs = do
           -- print s
         QueryState RemoteImageInfo -> queryImages
         DeployCmd subCmd -> runDeployCmd subCmd
+        DBMigrateCmd subCmd ->
+          case subCmd of
+            MigrateUpCmd -> runMigrationsOnProcHost
   where
     mapClusterName env' = ContainerCluster $
       case env' of
