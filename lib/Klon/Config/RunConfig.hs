@@ -26,21 +26,20 @@ loadAppConfig :: MonadIO m => m BaseConfig
 loadAppConfig =
   liftIO $ readDhall "./dhall/config.dhall"
 
-mkAppContext :: IO AppContext
+mkAppContext :: IO (LogFunc -> AppContext)
 mkAppContext = do
   baseConfig' <- loadAppConfig
   awsEnv' <- mkAwsConfig (baseConfig' ^. awsProfile)
   logOptions' <- logOptionsHandle stderr False
   let logOptions = setLogUseTime True $ setLogUseLoc True logOptions'
-  withLogFunc logOptions $ \logFunc -> do
-    return $
-      AppContext
-        { _appAwsEnv = awsEnv',
-          _appLogFunc = logFunc,
-          _appServices = baseConfig' ^. serviceSpecs,
-          _appBaseConfig = baseConfig',
-          _ecsDeploymentConfig = "fakeDeployConfig"
-        }
+  return $ \logFunc ->
+    AppContext
+      { _appAwsEnv = awsEnv',
+        _appLogFunc = logFunc,
+        _appServices = baseConfig' ^. serviceSpecs,
+        _appBaseConfig = baseConfig',
+        _ecsDeploymentConfig = "fakeDeployConfig"
+      }
 
 readDhall :: Text -> IO BaseConfig
 readDhall fp =

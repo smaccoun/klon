@@ -43,24 +43,28 @@ bootProg mbArgs = do
       inputConfig <- bootTUI
       print $ show inputConfig
       return ()
-    Just (Args cmd flgs) -> runKlonM context $ do
-      case cmd of
-        Connect (ConnectionCmd connectType appEnv') -> undefined -- TODO
-          -- let modifiedConfig = modifyConfigWithFlags flgs baseConfig
-          --     awsProf = _awsProfile modifiedConfig
-          -- ec2IP <- getAnEC2InstancePublicIP (mapClusterName appEnv')
-          -- Just pgConf <- runAWS_IO awsCfg $ (fromSSM @PGConf) id
-          -- let server = ServerConnectedToDB ec2IP
-          --     sshConfig' = fromMaybe defaultSSHConfig $ baseConfig ^. sshConfig
-          --     privateKeyLoc = PrivateKeyLoc (sshConfig' ^. sshPrivateKeyLoc) -- TODO
-          --     connectCmd = (getSSHCmd pgConf connectType server) privateKeyLoc
-          -- s <- shelly connectCmd
-          -- print s
-        QueryState RemoteImageInfo -> queryImages
-        DeployCmd subCmd -> runDeployCmd subCmd
-        DBMigrateCmd subCmd ->
-          case subCmd of
-            MigrateUpCmd -> runMigrationsOnProcHost
+    Just (Args cmd flgs) -> do
+      let isVerbose = False -- TODO: get from the command line instead
+      logOptions' <- logOptionsHandle stderr isVerbose
+      let logOptions = setLogUseTime True logOptions'
+      withLogFunc logOptions $ \logFunc' -> runKlonM (context logFunc') $ do
+        case cmd of
+          Connect (ConnectionCmd connectType appEnv') -> undefined -- TODO
+            -- let modifiedConfig = modifyConfigWithFlags flgs baseConfig
+            --     awsProf = _awsProfile modifiedConfig
+            -- ec2IP <- getAnEC2InstancePublicIP (mapClusterName appEnv')
+            -- Just pgConf <- runAWS_IO awsCfg $ (fromSSM @PGConf) id
+            -- let server = ServerConnectedToDB ec2IP
+            --     sshConfig' = fromMaybe defaultSSHConfig $ baseConfig ^. sshConfig
+            --     privateKeyLoc = PrivateKeyLoc (sshConfig' ^. sshPrivateKeyLoc) -- TODO
+            --     connectCmd = (getSSHCmd pgConf connectType server) privateKeyLoc
+            -- s <- shelly connectCmd
+            -- print s
+          QueryState RemoteImageInfo -> queryImages
+          DeployCmd subCmd -> runDeployCmd subCmd
+          DBMigrateCmd subCmd ->
+            case subCmd of
+              MigrateUpCmd -> runMigrationsOnProcHost
   where
     mapClusterName env' = ContainerCluster $
       case env' of

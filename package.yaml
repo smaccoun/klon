@@ -25,6 +25,7 @@ dependencies:
 - optparse-applicative
 - text
 - shelly
+- bytestring
 - amazonka
 - amazonka-core
 - amazonka-ecs

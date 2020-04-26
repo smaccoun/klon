@@ -9,7 +9,16 @@ import System.Process.Typed
 runMigrationsOnProcHost :: KlonM ()
 runMigrationsOnProcHost = do
   cmdToRun <- view $ baseConfigL . runMigrationCmd
-  runDefaultProc $ shell $ unpack cmdToRun
+  logInfo $ display $ "Running migrations using: " <> (displayProcAction cmdToRun)
+  runDefaultProc cmdToRun
+  where
+    displayProcAction pa =
+      (pa ^. procBin) <> " " <> (intercalate " " $ pa ^. procArgs)
+
+-- runMigrationOnRemote :: KlonM ()
+-- runMigrationOnRemote = given [EnvMatters] $ do
+--   curEnv' <-
+--   locateResource appEnv [CanRunMigration]
 
 data DBMigrateSubCmd = MigrateUpCmd
 
