@@ -8,7 +8,7 @@ import Lens.Micro.TH
 import Network.AWS
 import qualified Network.AWS as Aws
 import Network.AWS.ECR.DescribeImages
-import Network.AWS.ECR.Types (ImageDetail (..), idImageTags, idImagePushedAt, iiImageTag, imageIdentifier)
+import Network.AWS.ECR.Types (ImageDetail (..), idImagePushedAt, idImageTags, iiImageTag, imageIdentifier)
 import RIO
 import RIO.List (headMaybe)
 import RIO.List.Partial (head)
@@ -22,7 +22,7 @@ class HasECR_Repo env where
 instance (HasECR_Repo a) => HasDockerImageRepo a where
   dockerImageRepoL = ecrRepoUriL
 
-instance HasECR_Repo ServiceSpec where
+instance HasECR_Repo ServiceTaskSpec where
   ecrRepoUriL = remoteImageRepo
 
 dockerImageLoc = undefined
@@ -37,7 +37,7 @@ getLastNStoredImages serviceName numImages = do
   allImgs <- fetchImages (service ^. remoteImageRepo)
   return (allImgs ^. dirsImageDetails)
   where
-    fetchImages repo' = 
+    fetchImages repo' =
       Aws.send $
         describeImages repo'
           & (diMaxResults .~ Just (fromIntegral numImages))
@@ -53,7 +53,6 @@ getImageForCommit repo' tag' = do
         describeImages repo'
           & (diImageIds .~ [imageTagId])
 
-
 imageForCurrentCommit :: (MonadAWS m, GitMonad m, WithService m) => Text -> m (Maybe ImageDetail)
 imageForCurrentCommit repoName' = do
   curCommit <- headResolv
@@ -66,5 +65,3 @@ anyServiceImageForCurrentCommit = do
   services <- view serviceSpecsL
   let firstService = head services
   imageForCurrentCommit (firstService ^. remoteImageRepo)
-
-

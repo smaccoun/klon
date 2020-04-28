@@ -3,7 +3,7 @@ let SSHConfig: Type =
       { _sshPrivateKeyLoc : Text
       , _portForwardLocalPort : Integer
       }
-let ServiceSpec: Type =
+let ServiceTaskSpec: Type =
     {_serviceName : Text
     ,_remoteImageRepo : Text
     ,_clusterName : Text
@@ -16,14 +16,14 @@ let ProcAction: Type =
 in let BaseConfig: Type =       
       { _awsProfile : Text
       , _sshConfig : Optional SSHConfig
-      , _serviceSpecs: List ServiceSpec
+      , _serviceSpecs: List ServiceTaskSpec
       , _mkServiceSpecCmd : Text
       , _runMigrationCmd : ProcAction
 --      , _appEnv : AppEnv
       } 
 in {SSHConfig = SSHConfig
    ,BaseConfig = BaseConfig
-   ,ServiceSpec = ServiceSpec
+   ,ServiceTaskSpec = ServiceTaskSpec
    ,ProcAction = ProcAction
    ,AppEnv = AppEnv
    }

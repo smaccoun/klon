@@ -9,7 +9,7 @@ import Lens.Micro.TH
 
 Dhall.TH.makeHaskellTypes
   [ SingleConstructor "SSHConfig" "SSHConfig" "(./dhall/types/BaseConfigTypes.dhall).SSHConfig",
-    SingleConstructor "ServiceSpec" "ServiceSpec" "(./dhall/types/BaseConfigTypes.dhall).ServiceSpec",
+    SingleConstructor "ServiceTaskSpec" "ServiceTaskSpec" "(./dhall/types/BaseConfigTypes.dhall).ServiceTaskSpec",
     --    MultipleConstructors "AppEnv"  "(./dhall/types/BaseConfigTypes.dhall).AppEnv",
     SingleConstructor "ProcAction" "ProcAction" "(./dhall/types/BaseConfigTypes.dhall).ProcAction",
     SingleConstructor "BaseConfig" "BaseConfig" "(./dhall/types/BaseConfigTypes.dhall).BaseConfig"
@@ -17,13 +17,13 @@ Dhall.TH.makeHaskellTypes
 
 deriving instance Show SSHConfig
 
-deriving instance Show ServiceSpec
+deriving instance Show ServiceTaskSpec
 
 deriving instance Show ProcAction
 
 deriving instance Show BaseConfig
 
-makeLenses ''ServiceSpec
+makeLenses ''ServiceTaskSpec
 
 makeLenses ''ProcAction
 

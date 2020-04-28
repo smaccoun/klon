@@ -25,6 +25,7 @@ dependencies:
 - optparse-applicative
 - text
 - shelly
+- lens
 - bytestring
 - amazonka
 - amazonka-core
@@ -40,6 +41,7 @@ dependencies:
 - dhall
 - dhall-json
 - dhall-yaml
+- yaml
 - syb
 - aeson
 - tuple
@@ -52,6 +54,7 @@ dependencies:
 - freer-simple
 - rio-orphans
 - containers
+- deriving-aeson
 
 default-extensions:
   - ConstraintKinds
@@ -79,6 +82,7 @@ default-extensions:
   - DeriveAnyClass
   - DerivingStrategies
   - DeriveDataTypeable
+  - DerivingVia
 
 library:
   source-dirs: lib

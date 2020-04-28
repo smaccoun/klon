@@ -33,6 +33,7 @@ extra-deps:
 - aeson-yaml-1.0.6.0@sha256:bdf6d67265d9a3e251122fa53d2f0f19e0b9865d928e5d6efb77d4754ca3f6cb,1975
 - cborg-json-0.2.2.0@sha256:55eb9d8e897ae9fb6c8da7aed882d0c78b326632b1b58966921a1fcde2b88b8d,2035
 - prettyprinter-1.6.1@sha256:11876ec94a79048e1d2942a99bfaa6f2be5222eafeedac6a9545673a79465009,5459
+- deriving-aeson-0.2.2@sha256:6150cfdd6ae2083249ec387ec4bb808d99a6b730ce093b8920cd788e9e681c73,1210
 
 
 # - git: https://github.com/commercialhaskell/stack.git

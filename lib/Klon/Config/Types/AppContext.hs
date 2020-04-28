@@ -16,7 +16,7 @@ data AppContext
   = AppContext
       { _appAwsEnv :: !Aws.Env,
         _appLogFunc :: !LogFunc,
-        _appServices :: ![ServiceSpec],
+        _appServices :: ![ServiceTaskSpec],
         _appBaseConfig :: BaseConfig,
         _ecsDeploymentConfig :: Text
       }
@@ -44,13 +44,13 @@ instance HasBaseConfig AppContext where
   baseConfigL = appBaseConfig
 
 class HasServiceSpecs a where
-  serviceSpecsL :: Lens' a [ServiceSpec]
+  serviceSpecsL :: Lens' a [ServiceTaskSpec]
 
 instance HasServiceSpecs AppContext where
   serviceSpecsL = appServices
 
 class Monad m => WithService m where
-  forService :: Text -> m ServiceSpec
+  forService :: Text -> m ServiceTaskSpec
 
 instance (Monad m, MonadReader env m, HasServiceSpecs env) => WithService m where
   forService serviceName' = do
