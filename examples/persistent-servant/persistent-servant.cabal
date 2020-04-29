@@ -1,0 +1,37 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 030e47978ed7a03501d04b6a327505254b6070224135fb15d56eda20fe003563
+
+name:           persistent-servant
+version:        0.1.0.0
+category:       Web
+homepage:       https://github.com/githubuser/persistent-servant#readme
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2020 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+executable persistent-servant
+  main-is: Main.hs
+  other-modules:
+      Models
+      Paths_persistent_servant
+  hs-source-dirs:
+      src
+  default-extensions: ConstraintKinds DataKinds DeriveGeneric FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving KindSignatures MultiParamTypeClasses OverloadedStrings PolyKinds QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables NamedFieldPuns StandaloneDeriving TemplateHaskell TypeApplications TypeFamilies TypeOperators UndecidableInstances DeriveAnyClass DerivingStrategies DeriveDataTypeable DerivingVia
+  build-depends:
+      base >=4.7 && <5
+    , persistent
+    , persistent-postgresql
+    , persistent-template
+    , rio
+    , rio-orphans
+  default-language: Haskell2010

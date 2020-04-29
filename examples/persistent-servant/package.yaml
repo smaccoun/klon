@@ -1,0 +1,53 @@
+name:                persistent-servant
+version:             0.1.0.0
+#synopsis:
+#description:
+homepage:            https://github.com/githubuser/persistent-servant#readme
+license:             BSD3
+author:              Author name here
+maintainer:          example@example.com
+copyright:           2020 Author name here
+category:            Web
+extra-source-files:
+- README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+  - persistent
+  - persistent-template
+  - persistent-postgresql
+  - rio
+  - rio-orphans
+
+default-extensions:
+    - ConstraintKinds
+    - DataKinds
+    - DeriveGeneric
+    - FlexibleContexts
+    - FlexibleInstances
+    - GADTs
+    - GeneralizedNewtypeDeriving
+    - KindSignatures
+    - MultiParamTypeClasses
+    - OverloadedStrings
+    - PolyKinds
+    - QuasiQuotes
+    - RankNTypes
+    - RecordWildCards
+    - ScopedTypeVariables
+    - NamedFieldPuns
+    - StandaloneDeriving
+    - TemplateHaskell
+    - TypeApplications
+    - TypeFamilies
+    - TypeOperators
+    - UndecidableInstances
+    - DeriveAnyClass
+    - DerivingStrategies
+    - DeriveDataTypeable
+    - DerivingVia
+
+executables:
+  persistent-servant:
+    source-dirs:      src
+    main:             Main.hs

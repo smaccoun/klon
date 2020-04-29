@@ -1,0 +1,20 @@
+version: '3'
+services:
+  server:
+    image: postgrest/postgrest
+    ports:
+      - "3000:3000"
+    environment:
+      PGRST_DB_URI: postgres://postgres@host.docker.internal:5432/myapp
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: postgres #In production this role should not be the same as the one used for the connection
+  swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    environment:
+      API_URL: http://localhost:3000/
+    depends_on:
+      - server
